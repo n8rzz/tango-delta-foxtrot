@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ClickGameBoardPostWithMouse : MonoBehaviour 
+public class InteractWithGameBoardPost : MonoBehaviour 
 {
 	public GameController gameController;
 	public float playerPieceYOffset;
 	public float gamePieceY = 2;
 
 	private Color postColor;
-	private int nextPositionOnPost = 0;
+	private int piecesOnPost = 0;
 	private int maxPosition = 3;
 	private bool didClick = false;
+	
 
 	void Start()
 	{
@@ -30,14 +31,14 @@ public class ClickGameBoardPostWithMouse : MonoBehaviour
 
 	void OnMouseDown() 
 	{
-		if (nextPositionOnPost > maxPosition) 
+		if (piecesOnPost > maxPosition) 
 			return;
 
 		Vector3 postPosition = GetPositionForNewPiece();
-		string gameBoardPosition = nextPositionOnPost + "-" + this.name;
+		string gameBoardPosition = piecesOnPost + "-" + this.name;
 
 		gameController.WillMove(postPosition, gameBoardPosition);
-		nextPositionOnPost++;
+		piecesOnPost++;
 	}
 	  
 	void OnMouseUp() 
@@ -48,8 +49,10 @@ public class ClickGameBoardPostWithMouse : MonoBehaviour
 
 	void ChangePostColorToOriginal()
 	{
-		if (!didClick) 
+		if (!didClick)
+		{
 			GetComponent<Renderer>().material.color = postColor;
+		}
 	}
 
 	void ChangePostColorToHover()
@@ -64,7 +67,7 @@ public class ClickGameBoardPostWithMouse : MonoBehaviour
 
 	private Vector3 GetPositionForNewPiece() 
 	{
-		playerPieceYOffset = gamePieceY * nextPositionOnPost;
+		playerPieceYOffset = gamePieceY * piecesOnPost;
 
 		return new Vector3(this.transform.position.x, (0 + playerPieceYOffset), this.transform.position.z);
 	}
