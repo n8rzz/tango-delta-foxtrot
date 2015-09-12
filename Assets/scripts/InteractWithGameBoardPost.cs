@@ -3,7 +3,7 @@ using System.Collections;
 
 public class InteractWithGameBoardPost : MonoBehaviour 
 {
-	public GameController gameController;
+	public GameObject gameController;
 	public float playerPieceYOffset;
 	public float gamePieceY = 2;
 
@@ -37,7 +37,7 @@ public class InteractWithGameBoardPost : MonoBehaviour
 		Vector3 postPosition = GetPositionForNewPiece();
 		string gameBoardPosition = piecesOnPost + "-" + this.name;
 
-		gameController.WillMove(postPosition, gameBoardPosition);
+		gameController.GetComponent<GameController>().WillMove(postPosition, gameBoardPosition);
 		piecesOnPost++;
 	}
 	  

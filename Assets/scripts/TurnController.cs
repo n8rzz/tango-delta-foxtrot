@@ -4,13 +4,14 @@ using System.Collections;
 
 public class TurnController : MonoBehaviour 
 {	
-	public Text currentPlayerText;
+	public GameObject currentPlayerText;
 
 	private int currentPlayer;
 
 	void Awake()
 	{
 		Debug.Log("turnController " + GetInstanceID());
+        currentPlayerText = GameObject.FindGameObjectWithTag("currentTurn").gameObject;
 	}
 
 	void Start()
@@ -48,6 +49,6 @@ public class TurnController : MonoBehaviour
 	{
 		Debug.Log (currentPlayerText);
 		print("set " + currentPlayer);
-		currentPlayerText.text = "Current Player: " + (currentPlayer + 1).ToString();
+		currentPlayerText.GetComponent<Text>().text = "Current Player: " + (currentPlayer + 1).ToString();
 	}
 }

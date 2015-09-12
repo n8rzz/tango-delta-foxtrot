@@ -6,9 +6,9 @@ public class GameController : MonoBehaviour
 {
 	public GameObject playerOne;
 	public GameObject playerTwo;
-	public TurnController turnController;	
+	public GameObject turnController;	
 
-	public Text masterGameTimeText;
+	public GameObject masterGameTimeText;
 //	public Text elapsedTurnTimeText;
 
 	private int activePlayer;
@@ -51,10 +51,11 @@ public class GameController : MonoBehaviour
 	}
 
 	void Start () {
-		didStart = true;
+        masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
+        turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
+        didStart = true;
 		currentGameTime = 0f;
-//		elapsedTurnTime = 0f;
-		activePlayer = turnController.getCurrentPlayer();
+        //		elapsedTurnTime = 0f;  
 	}
 
 	void Update() 
@@ -68,7 +69,7 @@ public class GameController : MonoBehaviour
 		string masterGameTimeString = transformTime(currentGameTime);
 //		string masterTurnTimeString = transformTime(elapsedTurnTime);
 
-		masterGameTimeText.text = "Game Time: " + masterGameTimeString;
+		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
 //		elapsedTurnTimeText.text = "Turn Time: " + masterTurnTimeString;
 	}
 	
@@ -152,7 +153,8 @@ public class GameController : MonoBehaviour
 	/// </summary>
 	void changeActivePlayer()
 	{
-		activePlayer = turnController.changeCurrentPlayer();
+        var turnScript = turnController.GetComponent<TurnController>();
+        activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
 	
