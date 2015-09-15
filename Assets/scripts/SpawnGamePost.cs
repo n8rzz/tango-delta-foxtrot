@@ -18,6 +18,7 @@ public class SpawnGamePost : MonoBehaviour {
 				GameObject newpost = Instantiate(boardPost, transform.position+x*(transform.right*postContainerWidth)+y*(transform.forward*(-postContainerHeight)), Quaternion.identity) as GameObject;		
 				newpost.transform.name = y + "-" + x;
 				newpost.transform.parent = GameObject.FindGameObjectWithTag("gameBoardPostContainer").transform;
+                newpost.GetComponent<InteractWithGameBoardPost>().gameController = GameObject.FindGameObjectWithTag("gameManager").gameObject;
 			}
 		}
 	}
