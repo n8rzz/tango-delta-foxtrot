@@ -6,74 +6,76 @@ public class GameController : MonoBehaviour
 {
 	public GameObject playerOne;
 	public GameObject playerTwo;
-	public TurnController turnController;	
+	public GameObject turnController;	
 
-	public Text masterGameTimeText;
-	public Text elapsedTurnTimeText;
-	public Text currentTurnText;
+	public GameObject masterGameTimeText;
+//	public Text elapsedTurnTimeText;
 
 	private int activePlayer;
-	private int numberOfPlayers = 2;
 	private float currentGameTime;
 	private float elapsedTurnTime;
-	private bool didStartGame = false;
+	private bool didStart = false;
 	private bool isComplete = false;
+
 	private string postname;
 	private Vector3 activeGamePost;
 	private ArrayList gameHistory = new ArrayList();
 	private int[] lastMove = new int[3];
-	private int[, ,] gameBoard = new int[,,] {
-		{
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1}
-		}, {
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1}
-		}, {
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1}
-		}, {
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1}
-		}
-	};
+//	private int[, ,] gameBoard = new int[,,] {
+//		{
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1}
+//		}, {
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1}
+//		}, {
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1}
+//		}, {
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1},
+//			{-1, -1, -1, -1}
+//		}
+//	};
 
-
+	void Awake()
+	{
+		Debug.Log("gameController " + GetInstanceID());
+	}
 
 	void Start () {
-		didStartGame = true;
+        masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
+        turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
+        didStart = true;
 		currentGameTime = 0f;
-		elapsedTurnTime = 0f;
-		activePlayer = turnController.getCurrentPlayer();
-		Debug.Log (currentTurnText);
+        //		elapsedTurnTime = 0f;  
 	}
 
 	void Update() 
 	{
 		currentGameTime += Time.deltaTime;
-		elapsedTurnTime += Time.deltaTime;
+//		elapsedTurnTime += Time.deltaTime;
 	}
 
 	void FixedUpdate() 
 	{
 		string masterGameTimeString = transformTime(currentGameTime);
-		string masterTurnTimeString = transformTime(elapsedTurnTime);
+//		string masterTurnTimeString = transformTime(elapsedTurnTime);
 
-		masterGameTimeText.text = "Game Time: " + masterGameTimeString;
-		elapsedTurnTimeText.text = "Turn Time: " + masterTurnTimeString;
+		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
+//		elapsedTurnTimeText.text = "Turn Time: " + masterTurnTimeString;
 	}
 	
 	
 	//////////////////////////////////////////////////////////////////
-	/// GameState Facsade Methods
+	/// GameState Methods
 	//////////////////////////////////////////////////////////////////
 
 	// we are about to place the piece, do stuff that needs to be done before hand here
@@ -91,7 +93,7 @@ public class GameController : MonoBehaviour
 		lastMove = extractBoardPositionFromPostName(name);
 
 		_makeMove();
-
+		_didMove();
 	}
 
 	// place the player piece in the view on the selected post
@@ -105,7 +107,6 @@ public class GameController : MonoBehaviour
 	
 		// initiate wait time for undo
 
-		_didMove();
 	}
 
 	// we made the move, do stuff that needs to be done after the move is made here
@@ -125,34 +126,35 @@ public class GameController : MonoBehaviour
 	/// Manipulation methods
 	//////////////////////////////////////////////////////////////////
 
-
+	/// Instantiates a new game object based on the activePlayer
+	/// Adds name to new game object
+	/// Adds tag to new game object
+	/// Makes new game object a child of the playerMovesContainer
 	void PlacePlayerPieceOnPost()
 	{
 		if (activePlayer == 0) 
 		{
-
 			GameObject newmove = Instantiate(playerOne, activeGamePost, Quaternion.identity) as GameObject;
 			newmove.transform.name = "playerone_" + postname;
 			newmove.tag = "playerOneMoves";
 			newmove.transform.parent = GameObject.FindGameObjectWithTag("playerMovesContainer").transform;
 		} 
 		else 
-		{
-						
+		{				
 			GameObject newmove = Instantiate(playerTwo, activeGamePost, Quaternion.identity) as GameObject;
 			newmove.transform.name = "playertwo_" + postname;
 			newmove.tag = "playerOneMoves";
 			newmove.transform.parent = GameObject.FindGameObjectWithTag("playerMovesContainer").transform;
-
 		}
-
 	}
 
+	/// <summary>
+	/// Changes the active player.
+	/// </summary>
 	void changeActivePlayer()
 	{
-		activePlayer = turnController.changeCurrentPlayer();
-		Debug.Log ("activePlayer " + activePlayer);
-		Debug.Log (currentTurnText);
+        var turnScript = turnController.GetComponent<TurnController>();
+        activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
 	
@@ -162,8 +164,8 @@ public class GameController : MonoBehaviour
 
 	void restartTurnTimer()
 	{
-		print ("restart turn timer " + elapsedTurnTime);
-		elapsedTurnTime = 0f;
+//		print ("restart turn timer " + elapsedTurnTime);
+//		elapsedTurnTime = 0f;
 	}
 
 
