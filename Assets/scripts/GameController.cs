@@ -6,71 +6,60 @@ public class GameController : MonoBehaviour
 {
 	public GameObject playerOne;
 	public GameObject playerTwo;
-	public GameObject turnController;	
-
+	public GameObject turnController;
+	public GameObject gameBoardManager;
 	public GameObject masterGameTimeText;
-//	public Text elapsedTurnTimeText;
+	public GameObject elapsedTurnTimeText;
 
 	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
+	public float elapsedTurnTimeLimit = 60.0f; // number of seconds
 	private bool didStart = false;
 	private bool isComplete = false;
+	private enum GamePhase 
+	{
+		beginning = 16,
+		middle = 32,
+		end
+	};
 
 	private string postname;
 	private Vector3 activeGamePost;
-	private ArrayList gameHistory = new ArrayList();
 	private int[] lastMove = new int[3];
-//	private int[, ,] gameBoard = new int[,,] {
-//		{
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1}
-//		}, {
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1}
-//		}, {
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1}
-//		}, {
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1}
-//		}
-//	};
+
 
 	void Awake()
 	{
 		Debug.Log("gameController " + GetInstanceID());
 	}
 
-	void Start () {
+	void Start () 
+	{
         masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
+		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
         turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
+		gameBoardManager = GameObject.FindGameObjectWithTag("gameBoardManager").gameObject;
+
         didStart = true;
 		currentGameTime = 0f;
-        //		elapsedTurnTime = 0f;  
+
+		resetTurnTime();
 	}
 
 	void Update() 
 	{
 		currentGameTime += Time.deltaTime;
-//		elapsedTurnTime += Time.deltaTime;
+		elapsedTurnTime -= Time.deltaTime;
 	}
 
 	void FixedUpdate() 
 	{
 		string masterGameTimeString = transformTime(currentGameTime);
-//		string masterTurnTimeString = transformTime(elapsedTurnTime);
-
 		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
-//		elapsedTurnTimeText.text = "Turn Time: " + masterTurnTimeString;
+
+		string elapsedTurnTimeString = transformTime(elapsedTurnTime);
+		elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
 	}
 	
 	
@@ -85,6 +74,7 @@ public class GameController : MonoBehaviour
 		// split at _ and add to new player piece
 		postname = name;
 		print (postname);
+
 		// disable click handlers on posts
 		// is game still true
 		// what player is making this move
@@ -112,12 +102,21 @@ public class GameController : MonoBehaviour
 	// we made the move, do stuff that needs to be done after the move is made here
 	void _didMove()
 	{
-
-		gameHistory.Add(lastMove);
 		// perform win checks
+		var gameValidatorScript = gameBoardManager.GetComponent<GameBoardManager>();
+
+		gameValidatorScript.AddNewMove(lastMove);
+		bool isWinningMove = gameValidatorScript.IsWinningMove();
+		int currentMovesCount = gameValidatorScript.GetMovesCount();
+
+		print (isWinningMove);
+		
+			
+	
 		// update currentPlayer
 		changeActivePlayer();
-		restartTurnTimer();
+		getGamePhase(currentMovesCount);
+		resetTurnTime();
 		// enable click handlers on posts
 	}
 
@@ -157,15 +156,29 @@ public class GameController : MonoBehaviour
         activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
+	void resetTurnTime()
+	{
+		elapsedTurnTime = elapsedTurnTimeLimit;
+	}
+
 	
 	//////////////////////////////////////////////////////////////////
 	/// Utility Methods
 	//////////////////////////////////////////////////////////////////
 
-	void restartTurnTimer()
-	{
-//		print ("restart turn timer " + elapsedTurnTime);
-//		elapsedTurnTime = 0f;
+	void getGamePhase(int currentMoveCount)
+	{ 
+		print ("moves " + currentMoveCount);
+
+		if (currentMoveCount == (int)GamePhase.beginning)
+		{
+			elapsedTurnTimeLimit *= 1.5f;
+		}
+		else if (currentMoveCount == (int)GamePhase.middle)
+		{
+			float originalTimeLimit = elapsedTurnTimeLimit / 1.5f; 
+			elapsedTurnTimeLimit = originalTimeLimit * 2;
+		}
 	}
 
 
