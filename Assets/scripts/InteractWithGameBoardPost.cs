@@ -5,6 +5,7 @@ public class InteractWithGameBoardPost : MonoBehaviour
 {
 	public GameObject gameController;
 	public float playerPieceYOffset;
+	// TODO: grab the height from the game object
 	public float gamePieceY = 2;
 
 	private Color postColor;
@@ -42,9 +43,7 @@ public class InteractWithGameBoardPost : MonoBehaviour
 	}
 	  
 	void OnMouseUp() 
-	{
-//		ChangePostColorToOriginal();
-	}
+	{}
 
 
 	void ChangePostColorToOriginal()
