@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour
 	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
-	public float elapsedTurnTimeLimit = 60.0f; // number of seconds
+	private float elapsedTurnTimeLimit = 60.0f; // number of seconds
 	private bool didStart = false;
 	private bool isComplete = false;
 	private enum GamePhase 
@@ -24,15 +24,13 @@ public class GameController : MonoBehaviour
 		end
 	};
 
-	private string postname;
+//	private string postname;
 	private Vector3 activeGamePost;
 	private int[] lastMove = new int[3];
 
 
 	void Awake()
-	{
-		Debug.Log("gameController " + GetInstanceID());
-	}
+	{}
 
 	void Start () 
 	{
@@ -44,7 +42,7 @@ public class GameController : MonoBehaviour
         didStart = true;
 		currentGameTime = 0f;
 
-		resetTurnTime();
+		_resetTurnTime();
 	}
 
 	void Update() 
@@ -55,10 +53,10 @@ public class GameController : MonoBehaviour
 
 	void FixedUpdate() 
 	{
-		string masterGameTimeString = transformTime(currentGameTime);
+		string masterGameTimeString = _transformTime(currentGameTime);
 		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
 
-		string elapsedTurnTimeString = transformTime(elapsedTurnTime);
+		string elapsedTurnTimeString = _transformTime(elapsedTurnTime);
 		elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
 	}
 	
@@ -71,53 +69,42 @@ public class GameController : MonoBehaviour
 	public void WillMove(Vector3 postPosition, string name)
 	{
 		activeGamePost = postPosition;
-		// split at _ and add to new player piece
-		postname = name;
-		print (postname);
+		// todo: change to local var
+//		postname = name;
 
-		// disable click handlers on posts
 		// is game still true
-		// what player is making this move
 		// is this move possible
 		// calculate vertical offset
-		lastMove = extractBoardPositionFromPostName(name);
+		lastMove = _extractBoardPositionFromPostName(name);
 
-		_makeMove();
+		_makeMove(name);
 		_didMove();
 	}
 
 	// place the player piece in the view on the selected post
-	void _makeMove()
+	void _makeMove(string name)
 	{
 
-		// append to parent
-		// add to gameBoard array
-
-		PlacePlayerPieceOnPost();
+		_placePlayerPieceOnPost(name);
 	
 		// initiate wait time for undo
-
 	}
 
-	// we made the move, do stuff that needs to be done after the move is made here
+	// we made the move, do stuff that needs to be done after the move is confirmed 
 	void _didMove()
 	{
+		var gameBoardMaangerScript = gameBoardManager.GetComponent<GameBoardManager>();
+		gameBoardMaangerScript.AddNewMove(lastMove, activePlayer);
+
 		// perform win checks
-		var gameValidatorScript = gameBoardManager.GetComponent<GameBoardManager>();
+//		bool isWinningMove = gameValidatorScript.IsWinningMove();
+//		print (isWinningMove);
 
-		gameValidatorScript.AddNewMove(lastMove);
-		bool isWinningMove = gameValidatorScript.IsWinningMove();
-		int currentMovesCount = gameValidatorScript.GetMovesCount();
+		int currentMovesCount = gameBoardMaangerScript.GetMovesCount();
 
-		print (isWinningMove);
-		
-			
-	
-		// update currentPlayer
-		changeActivePlayer();
-		getGamePhase(currentMovesCount);
-		resetTurnTime();
-		// enable click handlers on posts
+		_changeActivePlayer();
+		_getGamePhase(currentMovesCount);
+		_resetTurnTime();
 	}
 
 
@@ -129,7 +116,7 @@ public class GameController : MonoBehaviour
 	/// Adds name to new game object
 	/// Adds tag to new game object
 	/// Makes new game object a child of the playerMovesContainer
-	void PlacePlayerPieceOnPost()
+	void _placePlayerPieceOnPost(string postname)
 	{
 		if (activePlayer == 0) 
 		{
@@ -146,17 +133,30 @@ public class GameController : MonoBehaviour
 			newmove.transform.parent = GameObject.FindGameObjectWithTag("playerMovesContainer").transform;
 		}
 	}
-
-	/// <summary>
-	/// Changes the active player.
-	/// </summary>
-	void changeActivePlayer()
+	
+	void _changeActivePlayer()
 	{
         var turnScript = turnController.GetComponent<TurnController>();
         activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
-	void resetTurnTime()
+	void _getGamePhase(int currentMoveCount)
+	{ 
+		if (currentMoveCount == (int)GamePhase.beginning)
+		{
+			// todo: refactor this to be calculated at start() with an enum
+			elapsedTurnTimeLimit *= 1.5f;
+		}
+		else if (currentMoveCount == (int)GamePhase.middle)
+		{
+			// todo: shame!
+			// todo: refactor this to be calculated at start() with an enum
+			float originalTimeLimit = elapsedTurnTimeLimit / 1.5f; 
+			elapsedTurnTimeLimit = originalTimeLimit * 2;
+		}
+	}
+
+	void _resetTurnTime()
 	{
 		elapsedTurnTime = elapsedTurnTimeLimit;
 	}
@@ -165,24 +165,8 @@ public class GameController : MonoBehaviour
 	//////////////////////////////////////////////////////////////////
 	/// Utility Methods
 	//////////////////////////////////////////////////////////////////
-
-	void getGamePhase(int currentMoveCount)
-	{ 
-		print ("moves " + currentMoveCount);
-
-		if (currentMoveCount == (int)GamePhase.beginning)
-		{
-			elapsedTurnTimeLimit *= 1.5f;
-		}
-		else if (currentMoveCount == (int)GamePhase.middle)
-		{
-			float originalTimeLimit = elapsedTurnTimeLimit / 1.5f; 
-			elapsedTurnTimeLimit = originalTimeLimit * 2;
-		}
-	}
-
-
-	int[] extractBoardPositionFromPostName(string postName)
+	
+	int[] _extractBoardPositionFromPostName(string postname)
 	{
 		// todo: optimize, possibly with below strategy
 		// string[] test = new string[] {"1", "2", "3", "4", "5"};
@@ -199,7 +183,7 @@ public class GameController : MonoBehaviour
 		return gameBoardPosition;
 	}
 
-	string transformTime(float time) 
+	string _transformTime(float time) 
 	{
 		int minutes = Mathf.FloorToInt(time / 60F);
 		int seconds = Mathf.FloorToInt(time - minutes * 60);
