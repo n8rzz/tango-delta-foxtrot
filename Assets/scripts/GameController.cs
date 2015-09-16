@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
 	public GameObject playerTwo;
 	public GameObject turnController;
 	public GameObject gameBoardManager;
+	public GameObject victoryController;
 	public GameObject masterGameTimeText;
 	public GameObject elapsedTurnTimeText;
 
@@ -38,6 +39,7 @@ public class GameController : MonoBehaviour
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
         turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
 		gameBoardManager = GameObject.FindGameObjectWithTag("gameBoardManager").gameObject;
+		victoryController = GameObject.FindGameObjectWithTag("victoryController").gameObject;
 
         didStart = true;
 		currentGameTime = 0f;
@@ -68,6 +70,12 @@ public class GameController : MonoBehaviour
 	// we are about to place the piece, do stuff that needs to be done before hand here
 	public void WillMove(Vector3 postPosition, string name)
 	{
+		if (!didStart || isComplete)
+		{
+			return;
+		}
+
+
 		activeGamePost = postPosition;
 		// todo: change to local var
 //		postname = name;
@@ -97,10 +105,12 @@ public class GameController : MonoBehaviour
 		gameBoardMaangerScript.AddNewMove(lastMove, activePlayer);
 
 		// perform win checks
-//		bool isWinningMove = gameValidatorScript.IsWinningMove();
+		var victoryControllerScript = victoryController.GetComponent<VictoryController>();
+		bool isWinningMove = victoryControllerScript.IsWinningMove(lastMove, activePlayer);
 //		print (isWinningMove);
 
-		int currentMovesCount = gameBoardMaangerScript.GetMovesCount();
+		int currentMovesCount = gameBoardMaangerScript.MoveCount;
+		print (currentMovesCount);
 
 		_changeActivePlayer();
 		_getGamePhase(currentMovesCount);
@@ -141,7 +151,7 @@ public class GameController : MonoBehaviour
 	}	
 
 	void _getGamePhase(int currentMoveCount)
-	{ 
+	{  
 		if (currentMoveCount == (int)GamePhase.beginning)
 		{
 			// todo: refactor this to be calculated at start() with an enum

@@ -38,12 +38,7 @@ public class GameBoardManager : MonoBehaviour
 		get { return gameBoard; }
 	}
 
-
-	void Awake()
-	{
-
-	}
-
+	
 	void Start()
 	{
 		madeMovesCount = 0;
@@ -58,7 +53,6 @@ public class GameBoardManager : MonoBehaviour
 		int cell = lastMove[2];
 
 		gameBoard[level, row, cell] = player;
-		print (player + " : " + gameBoard[level, row, cell] + "  |#|  [" + level + ", " + row + ", " + cell + "]" );
 
 		gameHistory.Add(lastMove);
 		madeMovesCount++;
@@ -68,19 +62,5 @@ public class GameBoardManager : MonoBehaviour
 	{
 		return madeMovesCount;
 	}
-
-	public bool IsWinningMove()
-	{
-		// entry point to victory checking
-		// victory check will return true for a win and false for no win
-
-		bool status = _isVictoryMove();
-
-		return status;
-	}
-
-	bool _isVictoryMove()
-	{
-		return false;
-	}
+	
 }
