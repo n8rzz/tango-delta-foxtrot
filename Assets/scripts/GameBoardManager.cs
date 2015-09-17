@@ -11,30 +11,34 @@ public class GameBoardManager : MonoBehaviour
 
 
 	private ArrayList gameHistory = new ArrayList();
-	protected int[,,] gameBoard = new int[,,] {
-		{
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1}
-		}, {
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1}
-		}, {
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1}
-		}, {
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1},
-			{-1, -1, -1, -1}
+	protected int[][][] gameBoard = 
+	{
+		new[] {
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1}
+		}, 
+		new[] {
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1}
+		}, 
+		new[] {
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1}
+		}, 
+		new[] {
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1},
+			new int[] {-1, -1, -1, -1}
 		}
 	};
-	public int[,,] GameBoard {
+	public int[][][] GameBoard {
 		get { return gameBoard; }
 	}
 
@@ -43,8 +47,7 @@ public class GameBoardManager : MonoBehaviour
 	{
 		madeMovesCount = 0;
 	}
-
-
+	
 
 	public void AddNewMove(int[] lastMove, int player) 
 	{
@@ -52,7 +55,7 @@ public class GameBoardManager : MonoBehaviour
 		int row = lastMove[1];
 		int cell = lastMove[2];
 
-		gameBoard[level, row, cell] = player;
+		gameBoard[level][row][cell] = player;
 
 		gameHistory.Add(lastMove);
 		madeMovesCount++;

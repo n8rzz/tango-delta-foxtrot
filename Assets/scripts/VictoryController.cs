@@ -4,88 +4,88 @@ using System.Collections;
 public class VictoryController : MonoBehaviour 
 {
 
-	private int[,,] gameBoard;
-	private int maxPosition;
+	private int[][][] gameBoard;
+
 	private int player;
-	private int lastMove;
-	private int level;
-	private int row;
-	private int cell;
+	private int maxPosition = 4;
+	
+	private int[] lastMove;
+	private int[] initialComparePoint;
+	private int[] comparePoint;
+
 	private int moveCounter;
 	private int playerAtPosition;
 	private bool willCheckInverse;
-	private int[,] vectorFromPoint = new int[,] {
+	private int[][] vectorFromPoint = new int[26][] {
 		//top left
-		{0, -1, -1},
+		new int[3] {0, -1, -1},
 		//top
-		{0, -1, 0},
+		new int[3] {0, -1, 0},
 		//top right
-	 	{0, -1, 1},
+		new int[3] {0, -1, 1},
 		//right
-		{0, 0, 1},
+		new int[3] {0, 0, 1},
 		//bottom right
-		{0, 1, 1},
+		new int[3] {0, 1, 1},
 		//bottom
-		{0, 1, 0},
+		new int[3] {0, 1, 0},
 		//bottom left
-		{0, 1, -1},
+		new int[3] {0, 1, -1},
 		//left
-		{0, 0, -1},
+		new int[3] {0, 0, -1},
 
 		//ascending
-		{1, 0, 0},
+		new int[3] {1, 0, 0},
 		//descending
-		{-1, 0, 0},
+		new int[3] {-1, 0, 0},
 		
 		//descending top left
-		{-1, -1, -1},
+		new int[3] {-1, -1, -1},
 		//descending top
-		{-1, -1, 0},
+		new int[3] {-1, -1, 0},
 		//descending top, right
-		{-1, -1, 1},
+		new int[3] {-1, -1, 1},
 		//descending right
-		{-1, 0, 1},
+		new int[3] {-1, 0, 1},
 		
 		//descending bottom, right
-		{-1, 1, 1},
+		new int[3] {-1, 1, 1},
 		//descending bottom
-		{-1, 1, 0},
+		new int[3] {-1, 1, 0},
 		//descending bottom, left
-		{-1, 1, -1},
+		new int[3] {-1, 1, -1},
 		//descending left
-		{-1, 0, -1},
-		
-		
+		new int[3] {-1, 0, -1},
+
 		//ascending top left
-		{1, -1, -1},
+		new int[3] {1, -1, -1},
 		//ascending top
-		{1, -1, 0},
+		new int[3] {1, -1, 0},
 		//ascending top, right
-		{1, -1, 1},
+		new int[3] {1, -1, 1},
 		//ascending right
-		
-		{1, 0, 1},
+		new int[3] {1, 0, 1},
 		//ascending bottom, right
-		{1, 1, 1},
+		new int[3] {1, 1, 1},
 		//ascending bottom
-		{1, 1, 0},
+		new int[3] {1, 1, 0},
 		//ascending bottom, left
-		{1, 1, -1},
+		new int[3] {1, 1, -1},
 		//ascending left
-		{1, 0, -1}
+		new int[3] {1, 0, -1}
 	};
 
 
 	void Update () {}
 	
 
-	public bool IsWinningMove(int[] lastMove, int player)
+	public bool IsWinningMove(int[][][] currentGameBoard, int[] playerMove, int activePlayer)
 	{
-		level = lastMove[0];
-		row = lastMove[1];
-		cell = lastMove[2];
+		gameBoard = currentGameBoard;
+		player = activePlayer;
+		lastMove = playerMove;
 
-		print (player + " : [" + level + ", " + row + ", " + cell + "]");
+		print (player + " : [" + lastMove[0] + ", " + lastMove[1] + ", " + lastMove[2] + "]");
 
 		bool status = _isWinningMove();
 
@@ -98,18 +98,108 @@ public class VictoryController : MonoBehaviour
 
 	bool _isWinningMove()
 	{
+		for (int i = 0; i < vectorFromPoint.GetLength(0); i++) 
+		{
+			int[] directionFromPoint = vectorFromPoint[i];
+
+			moveCounter = 0;
+			willCheckInverse = true;
+			initialComparePoint = _getNextPointAlongVector(directionFromPoint, lastMove);
+
+			if (!_isPointValid(initialComparePoint)) {
+				continue;
+			}
+
+
+			playerAtPosition = _getPlayerAtPoint(initialComparePoint);
+
+
+			while (playerAtPosition == player) 
+			{
+				playerAtPosition = -1;
+				moveCounter++;
+
+				print (playerAtPosition + ":" + moveCounter + ":" + maxPosition);
+
+				if (moveCounter == maxPosition) 
+				{
+					print ("WINNER!!");
+					return true;
+				}
+
+				comparePoint = _getNextPointAlongVector(directionFromPoint, initialComparePoint);
+
+				if (!_isPointValid(comparePoint) && willCheckInverse) {
+					print ("willCheckInverse");
+					comparePoint = _getOppositeVector(directionFromPoint);
+				}
+
+				if (!_isPointValid(comparePoint) && ! willCheckInverse) 
+				{
+					break;
+				}
+
+
+				playerAtPosition = _getPlayerAtPoint(comparePoint);
+			}
+
+		}
+
 		return false;
 	}
 
-	void _getNextPointAlongVector()
-	{}
 
-	void _getInverseVector()
-	{}
 
-	void _getPlayerAtPoint()
-	{}
+	int[] _getNextPointAlongVector(int[] directionFromPoint, int[] point)
+	{
+		int[] comparePoint = new int[3];
 
-	void _isPointValid()
-	{}
+		for (int i = 0; i < point.GetLength(0); i++) {
+			comparePoint[i] = point[i] + directionFromPoint[i];
+		}
+
+		return comparePoint;
+	}
+
+	int[] _getOppositeVector(int[] vector)
+	{
+		int i;
+		int[] oppositeVector = new int[3];
+
+		for (i = 0; i < vector.Length; i++) 
+		{
+			oppositeVector[i] = vector[i] * -1;
+		}
+
+		willCheckInverse = false;
+		return oppositeVector;
+	}
+
+	int _getPlayerAtPoint(int[] point)
+	{
+		int level = point[0];
+		int row = point[1];
+		int cell = point[2];
+
+//		print ("gameBoard " + gameBoard[level][row][cell]);
+
+		return gameBoard[level][row][cell];
+	}
+
+	bool _isPointValid(int[] point)
+	{
+		int i;
+		int maxPiecePosition = 3;
+
+		for (i = 0; i < point.Length; i++) 
+		{
+			if (point[i] < 0 || point[i] > maxPiecePosition) 
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 }

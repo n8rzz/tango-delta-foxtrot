@@ -101,16 +101,16 @@ public class GameController : MonoBehaviour
 	// we made the move, do stuff that needs to be done after the move is confirmed 
 	void _didMove()
 	{
-		var gameBoardMaangerScript = gameBoardManager.GetComponent<GameBoardManager>();
-		gameBoardMaangerScript.AddNewMove(lastMove, activePlayer);
+		var gameBoardMangerScript = gameBoardManager.GetComponent<GameBoardManager>();
+		gameBoardMangerScript.AddNewMove(lastMove, activePlayer);
+		int[][][] currentGameBoard = gameBoardMangerScript.GameBoard;
+		int currentMovesCount = gameBoardMangerScript.MoveCount;
 
 		// perform win checks
 		var victoryControllerScript = victoryController.GetComponent<VictoryController>();
-		bool isWinningMove = victoryControllerScript.IsWinningMove(lastMove, activePlayer);
+		bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, lastMove, activePlayer);
 //		print (isWinningMove);
 
-		int currentMovesCount = gameBoardMaangerScript.MoveCount;
-		print (currentMovesCount);
 
 		_changeActivePlayer();
 		_getGamePhase(currentMovesCount);
