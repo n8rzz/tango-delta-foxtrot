@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour 
 {
@@ -8,13 +9,15 @@ public class GameController : MonoBehaviour
 	public GameObject playerTwo;
 	public GameObject turnController;
 	public GameObject gameBoardManager;
+	public GameObject victoryController;
 	public GameObject masterGameTimeText;
 	public GameObject elapsedTurnTimeText;
+	public GameObject winnerBannerText;
 
 	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
-	public float elapsedTurnTimeLimit = 60.0f; // number of seconds
+	private float elapsedTurnTimeLimit = 60.0f; // number of seconds
 	private bool didStart = false;
 	private bool isComplete = false;
 	private enum GamePhase 
@@ -24,27 +27,28 @@ public class GameController : MonoBehaviour
 		end
 	};
 
-	private string postname;
+//	private string postname;
 	private Vector3 activeGamePost;
 	private int[] lastMove = new int[3];
 
 
 	void Awake()
-	{
-		Debug.Log("gameController " + GetInstanceID());
-	}
+	{}
 
 	void Start () 
 	{
         masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
+		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
 		gameBoardManager = GameObject.FindGameObjectWithTag("gameBoardManager").gameObject;
+		victoryController = GameObject.FindGameObjectWithTag("victoryController").gameObject;
 
         didStart = true;
 		currentGameTime = 0f;
+		winnerBannerText.GetComponent<Text>().text = "";
 
-		resetTurnTime();
+		_resetTurnTime();
 	}
 
 	void Update() 
@@ -55,10 +59,10 @@ public class GameController : MonoBehaviour
 
 	void FixedUpdate() 
 	{
-		string masterGameTimeString = transformTime(currentGameTime);
+		string masterGameTimeString = _transformTime(currentGameTime);
 		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
 
-		string elapsedTurnTimeString = transformTime(elapsedTurnTime);
+		string elapsedTurnTimeString = _transformTime(elapsedTurnTime);
 		elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
 	}
 	
@@ -67,57 +71,70 @@ public class GameController : MonoBehaviour
 	/// GameState Methods
 	//////////////////////////////////////////////////////////////////
 
-	// we are about to place the piece, do stuff that needs to be done before hand here
+	// we are about to place the piece, do stuff that needs to be done before the piece is placed on the GameBoard
 	public void WillMove(Vector3 postPosition, string name)
 	{
+		if (!didStart || isComplete)
+		{
+			return;
+		}
+			
 		activeGamePost = postPosition;
-		// split at _ and add to new player piece
-		postname = name;
-		print (postname);
+		// todo: change to local var
+//		postname = name;
 
-		// disable click handlers on posts
 		// is game still true
-		// what player is making this move
 		// is this move possible
 		// calculate vertical offset
-		lastMove = extractBoardPositionFromPostName(name);
+		lastMove = _extractBoardPositionFromPostName(name);
 
-		_makeMove();
+		_makeMove(name);
+//		initiate wait time for undo
+//		StartCoroutine(makeUndoMoveAvailable());
+//		disable click until timer is up
 		_didMove();
 	}
 
 	// place the player piece in the view on the selected post
-	void _makeMove()
+	void _makeMove(string name)
 	{
-
-		// append to parent
-		// add to gameBoard array
-
-		PlacePlayerPieceOnPost();
-	
-		// initiate wait time for undo
-
+		_placePlayerPieceOnPost(name);
 	}
 
-	// we made the move, do stuff that needs to be done after the move is made here
+//	IEnumerator makeUndoMoveAvailable()
+//	{
+//		Debug.Log("Before Waiting 3 seconds");
+//		yield return new WaitForSeconds(3);
+//		Debug.Log("After Waiting 3 Seconds");
+//	}
+
+	// we made the move, do stuff that needs to be done after the move is confirmed 
 	void _didMove()
 	{
+		var gameBoardMangerScript = gameBoardManager.GetComponent<GameBoardManager>();
+		gameBoardMangerScript.AddNewMove(lastMove, activePlayer);
+		int[][][] currentGameBoard = gameBoardMangerScript.GameBoard;
+		int currentMovesCount = gameBoardMangerScript.MoveCount;
+
 		// perform win checks
-		var gameValidatorScript = gameBoardManager.GetComponent<GameBoardManager>();
+		var victoryControllerScript = victoryController.GetComponent<VictoryController>();
+		bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, lastMove, activePlayer);
 
-		gameValidatorScript.AddNewMove(lastMove);
-		bool isWinningMove = gameValidatorScript.IsWinningMove();
-		int currentMovesCount = gameValidatorScript.GetMovesCount();
+		if (isWinningMove)
+		{
+			// do end game things
 
-		print (isWinningMove);
-		
-			
-	
-		// update currentPlayer
-		changeActivePlayer();
-		getGamePhase(currentMovesCount);
-		resetTurnTime();
-		// enable click handlers on posts
+			isComplete = true;
+			// stop timers
+			// show winning formation
+			_buildWinnerText();
+			// show restart button
+			return;
+		}
+
+		_changeActivePlayer();
+		_getGamePhase(currentMovesCount);
+		_resetTurnTime();
 	}
 
 
@@ -129,7 +146,7 @@ public class GameController : MonoBehaviour
 	/// Adds name to new game object
 	/// Adds tag to new game object
 	/// Makes new game object a child of the playerMovesContainer
-	void PlacePlayerPieceOnPost()
+	void _placePlayerPieceOnPost(string postname)
 	{
 		if (activePlayer == 0) 
 		{
@@ -147,42 +164,49 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-	/// <summary>
-	/// Changes the active player.
-	/// </summary>
-	void changeActivePlayer()
+	void _changeActivePlayer()
 	{
         var turnScript = turnController.GetComponent<TurnController>();
         activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
-	void resetTurnTime()
-	{
-		elapsedTurnTime = elapsedTurnTimeLimit;
-	}
-
-	
-	//////////////////////////////////////////////////////////////////
-	/// Utility Methods
-	//////////////////////////////////////////////////////////////////
-
-	void getGamePhase(int currentMoveCount)
-	{ 
-		print ("moves " + currentMoveCount);
-
+	void _getGamePhase(int currentMoveCount)
+	{  
 		if (currentMoveCount == (int)GamePhase.beginning)
 		{
+			// todo: refactor this to be calculated at start() with an enum
 			elapsedTurnTimeLimit *= 1.5f;
 		}
 		else if (currentMoveCount == (int)GamePhase.middle)
 		{
+			// todo: shame!
+			// todo: refactor this to be calculated at start() with an enum
 			float originalTimeLimit = elapsedTurnTimeLimit / 1.5f; 
 			elapsedTurnTimeLimit = originalTimeLimit * 2;
 		}
 	}
 
+	void _resetTurnTime()
+	{
+		elapsedTurnTime = elapsedTurnTimeLimit;
+	}
 
-	int[] extractBoardPositionFromPostName(string postName)
+	void _buildWinnerText()
+	{
+		winnerBannerText.GetComponent<Text>().text = "Player " + (activePlayer + 1) + " is the winner!";
+	}
+
+// 	reset game after button click and confirm
+//	void _requestToResetGame()
+//	{
+//		SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
+//	}
+	
+	//////////////////////////////////////////////////////////////////
+	/// Helper Methods
+	//////////////////////////////////////////////////////////////////
+	
+	int[] _extractBoardPositionFromPostName(string postname)
 	{
 		// todo: optimize, possibly with below strategy
 		// string[] test = new string[] {"1", "2", "3", "4", "5"};
@@ -199,7 +223,7 @@ public class GameController : MonoBehaviour
 		return gameBoardPosition;
 	}
 
-	string transformTime(float time) 
+	string _transformTime(float time) 
 	{
 		int minutes = Mathf.FloorToInt(time / 60F);
 		int seconds = Mathf.FloorToInt(time - minutes * 60);
