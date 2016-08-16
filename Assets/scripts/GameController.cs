@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour 
 {
@@ -11,6 +12,7 @@ public class GameController : MonoBehaviour
 	public GameObject victoryController;
 	public GameObject masterGameTimeText;
 	public GameObject elapsedTurnTimeText;
+	public GameObject winnerBannerText;
 
 	private int activePlayer;
 	private float currentGameTime;
@@ -37,12 +39,14 @@ public class GameController : MonoBehaviour
 	{
         masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
+		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
 		gameBoardManager = GameObject.FindGameObjectWithTag("gameBoardManager").gameObject;
 		victoryController = GameObject.FindGameObjectWithTag("victoryController").gameObject;
 
         didStart = true;
 		currentGameTime = 0f;
+		winnerBannerText.GetComponent<Text>().text = "";
 
 		_resetTurnTime();
 	}
@@ -67,15 +71,14 @@ public class GameController : MonoBehaviour
 	/// GameState Methods
 	//////////////////////////////////////////////////////////////////
 
-	// we are about to place the piece, do stuff that needs to be done before hand here
+	// we are about to place the piece, do stuff that needs to be done before the piece is placed on the GameBoard
 	public void WillMove(Vector3 postPosition, string name)
 	{
 		if (!didStart || isComplete)
 		{
 			return;
 		}
-
-
+			
 		activeGamePost = postPosition;
 		// todo: change to local var
 //		postname = name;
@@ -116,8 +119,18 @@ public class GameController : MonoBehaviour
 		// perform win checks
 		var victoryControllerScript = victoryController.GetComponent<VictoryController>();
 		bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, lastMove, activePlayer);
-		print ("isWin " + isWinningMove);
 
+		if (isWinningMove)
+		{
+			// do end game things
+
+			isComplete = true;
+			// stop timers
+			// show winning formation
+			_buildWinnerText();
+			// show restart button
+			return;
+		}
 
 		_changeActivePlayer();
 		_getGamePhase(currentMovesCount);
@@ -178,9 +191,19 @@ public class GameController : MonoBehaviour
 		elapsedTurnTime = elapsedTurnTimeLimit;
 	}
 
+	void _buildWinnerText()
+	{
+		winnerBannerText.GetComponent<Text>().text = "Player " + (activePlayer + 1) + " is the winner!";
+	}
+
+// 	reset game after button click and confirm
+//	void _requestToResetGame()
+//	{
+//		SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
+//	}
 	
 	//////////////////////////////////////////////////////////////////
-	/// Utility Methods
+	/// Helper Methods
 	//////////////////////////////////////////////////////////////////
 	
 	int[] _extractBoardPositionFromPostName(string postname)

@@ -46,7 +46,23 @@ public class TurnController : MonoBehaviour
 
 	void _setCurrentPlayerText()
 	{
+//		Color currentPlayerColor = _findCurrentPlayerColor();
 		currentPlayerText.GetComponent<Text>().text = "Current Player: " + (currentPlayer + 1).ToString();
+		print ("color: " + _findCurrentPlayerColor());
+		currentPlayerText.GetComponent<Text>().color = _findCurrentPlayerColor();
 	}
-	
+
+	Color _findCurrentPlayerColor()
+	{
+		// TODO: rplace standard colors with actual RGBA colors
+//		Color playerOneMeshColor = new Color(166, 34, 180, 255);
+//		Color playerTwoMeshColor = new Color(15, 39, 191, 255);
+
+		if (currentPlayer == 0) 
+		{
+			return Color.magenta;
+		}
+
+		return Color.blue;
+	}
 }
