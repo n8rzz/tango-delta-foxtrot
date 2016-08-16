@@ -86,17 +86,24 @@ public class GameController : MonoBehaviour
 		lastMove = _extractBoardPositionFromPostName(name);
 
 		_makeMove(name);
+//		initiate wait time for undo
+//		StartCoroutine(makeUndoMoveAvailable());
+//		disable click until timer is up
 		_didMove();
 	}
 
 	// place the player piece in the view on the selected post
 	void _makeMove(string name)
 	{
-
 		_placePlayerPieceOnPost(name);
-	
-		// initiate wait time for undo
 	}
+
+//	IEnumerator makeUndoMoveAvailable()
+//	{
+//		Debug.Log("Before Waiting 3 seconds");
+//		yield return new WaitForSeconds(3);
+//		Debug.Log("After Waiting 3 Seconds");
+//	}
 
 	// we made the move, do stuff that needs to be done after the move is confirmed 
 	void _didMove()
@@ -109,7 +116,7 @@ public class GameController : MonoBehaviour
 		// perform win checks
 		var victoryControllerScript = victoryController.GetComponent<VictoryController>();
 		bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, lastMove, activePlayer);
-//		print (isWinningMove);
+		print ("isWin " + isWinningMove);
 
 
 		_changeActivePlayer();
@@ -143,7 +150,7 @@ public class GameController : MonoBehaviour
 			newmove.transform.parent = GameObject.FindGameObjectWithTag("playerMovesContainer").transform;
 		}
 	}
-	
+
 	void _changeActivePlayer()
 	{
         var turnScript = turnController.GetComponent<TurnController>();

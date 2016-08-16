@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
+/// <summary>
+///
+/// </summary>
 public class VictoryController : MonoBehaviour 
 {
 
-	private int[][][] gameBoard;
+	private int INVALID_POINT = -100;
 
-	private int player;
-	private int maxPosition = 4;
-	
+	private int[][][] gameBoard;
 	private int[] lastMove;
 	private int[] initialComparePoint;
 	private int[] comparePoint;
+	private int[] nextComparePoint;
+	private int player;
+	private int maxPosition;
+	private bool shouldCheckOpposite;
 
-	private int moveCounter;
-	private int playerAtPosition;
-	private bool willCheckInverse;
 	private int[][] vectorFromPoint = new int[26][] {
 		//top left
 		new int[3] {0, -1, -1},
@@ -74,118 +77,148 @@ public class VictoryController : MonoBehaviour
 		//ascending left
 		new int[3] {1, 0, -1}
 	};
-
-
+		
 	void Update () {}
 	
-
+	/// <summary>
+	///
+	/// </summary>
 	public bool IsWinningMove(int[][][] currentGameBoard, int[] playerMove, int activePlayer)
 	{
 		gameBoard = currentGameBoard;
 		player = activePlayer;
 		lastMove = playerMove;
+		maxPosition = currentGameBoard.GetLength(0) - 1;
 
-		print (player + " : [" + lastMove[0] + ", " + lastMove[1] + ", " + lastMove[2] + "]");
-
-		bool status = _isWinningMove();
-
-		return status;
+		return  _isWinningMove();
 	}
 
 	////////////////////////////////////////////////////////////////////////
 	/// Private Methods
 	////////////////////////////////////////////////////////////////////////
 
+	/// <summary>
+	///
+	/// </summary>
 	bool _isWinningMove()
 	{
 		for (int i = 0; i < vectorFromPoint.GetLength(0); i++) 
 		{
+			int[] nextComparePoint;
 			int[] directionFromPoint = vectorFromPoint[i];
+			int moveCounter = 0;
+			int playerAtPosition = -1;
+			shouldCheckOpposite = true;
+			comparePoint = _findNextComparePoint(directionFromPoint, lastMove);
 
-			moveCounter = 0;
-			willCheckInverse = true;
-			initialComparePoint = _getNextPointAlongVector(directionFromPoint, lastMove);
-
-			if (!_isPointValid(initialComparePoint)) {
+			if (!_isPointValid(comparePoint)) 
+			{
 				continue;
 			}
-
-
-			playerAtPosition = _getPlayerAtPoint(initialComparePoint);
-
+				
+			playerAtPosition = _findPlayerAtPoint(comparePoint);
 
 			while (playerAtPosition == player) 
 			{
-				playerAtPosition = -1;
 				moveCounter++;
-
-				print (playerAtPosition + ":" + moveCounter + ":" + maxPosition);
+				playerAtPosition = -1;
 
 				if (moveCounter == maxPosition) 
 				{
-					print ("WINNER!!");
 					return true;
 				}
 
-				comparePoint = _getNextPointAlongVector(directionFromPoint, initialComparePoint);
+				nextComparePoint = _findNextComparePoint(directionFromPoint, comparePoint);
 
-				if (!_isPointValid(comparePoint) && willCheckInverse) {
-					print ("willCheckInverse");
-					comparePoint = _getOppositeVector(directionFromPoint);
-				}
-
-				if (!_isPointValid(comparePoint) && ! willCheckInverse) 
-				{
+				if (nextComparePoint[0] == INVALID_POINT || !_isPointValid(nextComparePoint)) {
 					break;
 				}
 
-
-				playerAtPosition = _getPlayerAtPoint(comparePoint);
+				playerAtPosition = _findPlayerAtPoint(nextComparePoint);
+				comparePoint = nextComparePoint;
 			}
-
 		}
 
 		return false;
 	}
 
+	//////////////////////////////////////////////////////////////////
+	/// Helper Methods
+	//////////////////////////////////////////////////////////////////
 
-
-	int[] _getNextPointAlongVector(int[] directionFromPoint, int[] point)
+	/// <summary>
+	///
+	/// </summary>
+	int[] _findNextComparePoint(int[] direction, int[] comparePoint) 
 	{
-		int[] comparePoint = new int[3];
+		int[] nextComparePoint = _findNextPointForDirection(direction, comparePoint);
 
-		for (int i = 0; i < point.GetLength(0); i++) {
-			comparePoint[i] = point[i] + directionFromPoint[i];
+		if (!_isPointValid(nextComparePoint))
+		{
+			if (!shouldCheckOpposite) 
+			{
+				int [] invalidComparePoint = {INVALID_POINT};
+
+				return invalidComparePoint;
+			}
+
+			shouldCheckOpposite = false;
+			int[] oppositeDirection = _findOppositeDirectionFromLastMove(direction, lastMove);
+			nextComparePoint = _findNextPointForDirection(oppositeDirection, lastMove);
 		}
 
-		return comparePoint;
+		return nextComparePoint;
 	}
 
-	int[] _getOppositeVector(int[] vector)
+	/// <summary>
+	///
+	/// </summary>
+	int[] _findNextPointForDirection(int[] direction, int[] point) 
 	{
-		int i;
+		int level = point[0] + direction[0];
+		int row = point[1] + direction[1];
+		int cell = point[2] + direction[2];
+		int[] nextComparePoint = {level, row, cell};
+
+		return nextComparePoint;
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	int[] _findOppositeDirectionFromLastMove(int[] direction, int[] point) 
+	{
 		int[] oppositeVector = new int[3];
 
-		for (i = 0; i < vector.Length; i++) 
+		for (var j = 0; j < direction.GetLength(0); j++) 
 		{
-			oppositeVector[i] = vector[i] * -1;
+			if (direction[j] == 0) 
+			{
+				oppositeVector[j] = direction[j];
+				continue;
+			}
+
+			oppositeVector[j] = direction[j] * -1;
 		}
 
-		willCheckInverse = false;
 		return oppositeVector;
 	}
 
-	int _getPlayerAtPoint(int[] point)
+	/// <summary>
+	///
+	/// </summary>
+	int _findPlayerAtPoint(int[] point)
 	{
 		int level = point[0];
 		int row = point[1];
 		int cell = point[2];
 
-//		print ("gameBoard " + gameBoard[level][row][cell]);
-
 		return gameBoard[level][row][cell];
 	}
 
+	/// <summary>
+	///
+	/// </summary>
 	bool _isPointValid(int[] point)
 	{
 		int i;
@@ -201,5 +234,4 @@ public class VictoryController : MonoBehaviour
 
 		return true;
 	}
-
 }
