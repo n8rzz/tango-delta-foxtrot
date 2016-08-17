@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour 
 {
@@ -195,12 +195,6 @@ public class GameController : MonoBehaviour
 	{
 		winnerBannerText.GetComponent<Text>().text = "Player " + (activePlayer + 1) + " is the winner!";
 	}
-
-// 	reset game after button click and confirm
-//	void _requestToResetGame()
-//	{
-//		SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
-//	}
 	
 	//////////////////////////////////////////////////////////////////
 	/// Helper Methods
