@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public static class FormationBuilder
+public static class FormationModelBuilder
 {
 	static private int MAX_LENGTH = 4;
 
@@ -13,16 +13,20 @@ public static class FormationBuilder
 		switch (variation) 
 		{
 			case "NATURAL":
-				for (var level = 0; level < MAX_LENGTH; level++) {
-					for (var row = 0; row < MAX_LENGTH; row++) {
+				for (var level = 0; level < MAX_LENGTH; level++) 
+				{
+					for (var row = 0; row < MAX_LENGTH; row++) 
+					{
 						int[][] singleRow = new int[MAX_LENGTH][];
 
-						for (var cell = 0; cell < MAX_LENGTH; cell++) {
+						for (var cell = 0; cell < MAX_LENGTH; cell++) 
+						{
 							int[] singleCellInRow = new int[] {level, row, cell};
-							
+//							Debug.Log("--- [" + singleCellInRow[0] + ", " + singleCellInRow[1] + ", " + singleCellInRow[2] + "]");
+								
 							singleRow[row] = singleCellInRow;
 						}
-							
+						
 						allRows.Add(singleRow);
 					}
 				}
@@ -61,7 +65,7 @@ public static class FormationBuilder
 			default:
 				break;
 		}
-
+			
 		return allRows;
 	}
 
