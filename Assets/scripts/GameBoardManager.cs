@@ -9,7 +9,7 @@ public class GameBoardManager : MonoBehaviour
 		get { return madeMovesCount; }
 	}
 
-
+	// FIXME: move to new class GameHistory
 	private ArrayList gameHistory = new ArrayList();
 	protected int[][][] gameBoard = 
 	{
@@ -38,6 +38,7 @@ public class GameBoardManager : MonoBehaviour
 			new int[] {-1, -1, -1, -1}
 		}
 	};
+
 	public int[][][] GameBoard {
 		get { return gameBoard; }
 	}
@@ -45,24 +46,28 @@ public class GameBoardManager : MonoBehaviour
 	
 	void Start()
 	{
+		// FIXME: remove once GameHistory is implemented
 		madeMovesCount = 0;
 	}
 	
 
-	public void AddNewMove(int[] lastMove, int player) 
+	public void addNewMove(int[] moveToMake, int player) 
 	{
-		int level = lastMove[0];
-		int row = lastMove[1];
-		int cell = lastMove[2];
+		int level = moveToMake[0];
+		int row = moveToMake[1];
+		int cell = moveToMake[2];
 
 		gameBoard[level][row][cell] = player;
 
-		gameHistory.Add(lastMove);
+		gameHistory.Add(moveToMake);
+		// FIXME: remove once GameHistory is implemented
 		madeMovesCount++;
 	}
 
 	public int GetMovesCount()
 	{
+		// FIXME: this should return the current length of the GameHistory arrayList.
+		// FIXME: refactor once GameHistory is implemented.
 		return madeMovesCount;
 	}
 	

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-//using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour 
 {
@@ -14,26 +13,22 @@ public class GameController : MonoBehaviour
 	public GameObject elapsedTurnTimeText;
 	public GameObject winnerBannerText;
 
+	private FormationsCollection formationsCollection = new FormationsCollection();
 	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
 	private float elapsedTurnTimeLimit = 60.0f; // number of seconds
 	private bool didStart = false;
 	private bool isComplete = false;
-	private enum GamePhase 
-	{
+	private enum GamePhase {
 		beginning = 16,
 		middle = 32,
 		end
 	};
-
-//	private string postname;
+		
 	private Vector3 activeGamePost;
-	private int[] lastMove = new int[3];
+	private int[] moveToMake = new int[3];
 
-
-	void Awake()
-	{}
 
 	void Start () 
 	{
@@ -71,8 +66,8 @@ public class GameController : MonoBehaviour
 	/// GameState Methods
 	//////////////////////////////////////////////////////////////////
 
-	// we are about to place the piece, do stuff that needs to be done before the piece is placed on the GameBoard
-	public void WillMove(Vector3 postPosition, string name)
+	// entry into this method comes from InteractWithGameBoardPost.OnMouseDown
+	public void willMove(Vector3 postPosition, string name)
 	{
 		if (!didStart || isComplete)
 		{
@@ -80,46 +75,36 @@ public class GameController : MonoBehaviour
 		}
 			
 		activeGamePost = postPosition;
-		// todo: change to local var
-//		postname = name;
+		moveToMake = _extractBoardPositionFromPostName(name);
 
-		// is game still true
-		// is this move possible
-		// calculate vertical offset
-		lastMove = _extractBoardPositionFromPostName(name);
-
-		_makeMove(name);
-//		initiate wait time for undo
-//		StartCoroutine(makeUndoMoveAvailable());
-//		disable click until timer is up
-		_didMove();
+		_willExecutePlayerMove(name);
+		// initiate wait time for undo
+		// StartCoroutine(makeUndoMoveAvailable());
+		// disable click until timer is up
+		_didExecutePlayerMove();
 	}
 
 	// place the player piece in the view on the selected post
-	void _makeMove(string name)
+	void _willExecutePlayerMove(string name)
 	{
 		_placePlayerPieceOnPost(name);
 	}
-
-//	IEnumerator makeUndoMoveAvailable()
-//	{
-//		Debug.Log("Before Waiting 3 seconds");
-//		yield return new WaitForSeconds(3);
-//		Debug.Log("After Waiting 3 Seconds");
-//	}
-
+		
 	// we made the move, do stuff that needs to be done after the move is confirmed 
-	void _didMove()
+	void _didExecutePlayerMove()
 	{
 		var gameBoardMangerScript = gameBoardManager.GetComponent<GameBoardManager>();
-		gameBoardMangerScript.AddNewMove(lastMove, activePlayer);
+		var victoryControllerScript = victoryController.GetComponent<VictoryController>();
+
+		gameBoardMangerScript.addNewMove(moveToMake, activePlayer);
 		int[][][] currentGameBoard = gameBoardMangerScript.GameBoard;
+
+		// FIXME: remove once GameHistory is implemented
 		int currentMovesCount = gameBoardMangerScript.MoveCount;
 
 		// perform win checks
-		var victoryControllerScript = victoryController.GetComponent<VictoryController>();
-		bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, lastMove, activePlayer);
-
+		// FIXME: abstract to method
+		bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, moveToMake, activePlayer);
 		if (isWinningMove)
 		{
 			// do end game things

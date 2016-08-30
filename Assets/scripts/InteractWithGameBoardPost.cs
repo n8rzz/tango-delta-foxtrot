@@ -4,6 +4,7 @@ using System.Collections;
 public class InteractWithGameBoardPost : MonoBehaviour 
 {
 	public GameObject gameController;
+//	public GameObject gameBoardController;
 	public float playerPieceYOffset;
 	// TODO: grab the height from the game object
 	public float gamePieceY = 2;
@@ -32,13 +33,15 @@ public class InteractWithGameBoardPost : MonoBehaviour
 
 	void OnMouseDown() 
 	{
+		// FIXME: gameBoardController.isValidMove
 		if (piecesOnPost > maxPosition) 
 			return;
 
 		Vector3 postPosition = GetPositionForNewPiece();
 		string gameBoardPosition = piecesOnPost + "-" + this.name;
 
-		gameController.GetComponent<GameController>().WillMove(postPosition, gameBoardPosition);
+		gameController.GetComponent<GameController>().willMove(postPosition, gameBoardPosition);
+		// FIXME: remove after ln: 36 is implemented
 		piecesOnPost++;
 	}
 	  
@@ -66,7 +69,8 @@ public class InteractWithGameBoardPost : MonoBehaviour
 
 	private Vector3 GetPositionForNewPiece() 
 	{
-		playerPieceYOffset = gamePieceY * piecesOnPost;
+		playerPieceYOffset = (gamePieceY * piecesOnPost) + 0.5f;
+//		playerPieceYOffset = gamePieceY * piecesOnPost;
 
 		return new Vector3(this.transform.position.x, (0 + playerPieceYOffset), this.transform.position.z);
 	}

@@ -8,6 +8,7 @@ public class TurnController : MonoBehaviour
 
 	private int currentPlayer;
 
+
 	void Awake()
 	{
         currentPlayerText = GameObject.FindGameObjectWithTag("currentTurn").gameObject;
@@ -29,14 +30,7 @@ public class TurnController : MonoBehaviour
 	
 	public int changeCurrentPlayer()
 	{
-		if (currentPlayer == 0) 
-		{
-			currentPlayer = 1;
-		}
-		else 
-		{
-			currentPlayer = 0;
-		}
+		currentPlayer = (currentPlayer == 0) ? 1 : 0;
 
 		_setCurrentPlayerText();
 
@@ -56,11 +50,6 @@ public class TurnController : MonoBehaviour
 //		Color playerOneMeshColor = new Color(166, 34, 180, 255);
 //		Color playerTwoMeshColor = new Color(15, 39, 191, 255);
 
-		if (currentPlayer == 0) 
-		{
-			return Color.magenta;
-		}
-
-		return Color.blue;
+		return (currentPlayer == 0) ? Color.magenta : Color.blue;
 	}
 }
