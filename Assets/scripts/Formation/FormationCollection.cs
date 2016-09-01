@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-public class FormationsCollection
+public class FormationCollection
 {
     public List<FormationModel> formations = new List<FormationModel>();
 
 
-    public FormationsCollection()
+    public FormationCollection()
     {
         List<FormationModel> possibleFormations = new List<FormationModel>(FormationModelBuilder.buildFormationModelsFromPossibleFormations());
 

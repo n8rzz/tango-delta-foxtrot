@@ -1,9 +1,9 @@
-﻿public class GameBoardController
+﻿public static class GameBoardController
 {
 
-    FormationsCollection formationsCollection = new FormationsCollection();
+    static FormationCollection FormationCollection = new FormationCollection();
     // GameHistory gameHistory = new GameHistory();
-    protected int[][][] gameBoard =
+    static int[][][] gameBoard =
     {
         new[] {
             new int[] {-1, -1, -1, -1},
@@ -30,16 +30,11 @@
             new int[] {-1, -1, -1, -1}
         }
     };
-    public int[][][] GameBoard {
+    static public int[][][] GameBoard {
         get { return gameBoard; }
     }
 
-    // public GameBoardController()
-    // {
-
-    // }
-
-    public int findPlayerForPoint(FormationPointModel point)
+    public static int findPlayerForPoint(FormationPointModel point)
     {
         int level = point.level;
         int row = point.row;
@@ -48,13 +43,12 @@
         return gameBoard[level][row][column];
     }
 
-
-    private bool isPointAvailable(FormationPointModel point)
+    public static bool isPointAvailable(FormationPointModel point)
     {
         return findPlayerForPoint(point) != -1;
     }
 
-    private bool isValidMove(FormationPointModel point)
+    public static bool isValidMove(FormationPointModel point)
     {
         if (point.level == 0) {
             return isPointAvailable(point);
@@ -66,7 +60,7 @@
         return isPointAvailable(point) && (findPlayerForPoint(comparePoint) != -1);
     }
 
-    public bool addPlayerAtPoint(int player, FormationPointModel point)
+    public static bool addPlayerAtPoint(int player, FormationPointModel point)
     {
         if (!isValidMove(point)) {
             return false;
@@ -77,16 +71,16 @@
         return true;
     }
 
-    // private void addToHistory(int player, FormationPointModel point)
+    // public static void addToHistory(int player, FormationPointModel point)
     // {
     //     this.gameHistory.addPlayerMoveToHistory(player, point);
     // }
 
-    // private Object findWinningFormation(int player, FormationPointModel point)
+    // public static Object findWinningFormation(int player, FormationPointModel point)
     // {
     //     if (gameHistory.Count > 7)
     //     {
-    //         List<FormationModel> formations = formationsCollection.filterFormationsForPoint(point);
+    //         List<FormationModel> formations = FormationCollection.filterFormationsForPoint(point);
 
     //         for (var i = 0; i < formations.Count; i++)
     //         {
@@ -100,7 +94,7 @@
     //     return null;
     // }
 
-    // private bool isWinningFormation(int player, FormationModel formationPoints)
+    // private static bool isWinningFormation(int player, FormationModel formationPoints)
     // {
     //     for (var i = 0; i < formationPoints.length; i++)
     //     {

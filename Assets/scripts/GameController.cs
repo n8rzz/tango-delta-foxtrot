@@ -13,8 +13,7 @@ public class GameController : MonoBehaviour
 	public GameObject elapsedTurnTimeText;
 	public GameObject winnerBannerText;
 
-	// private FormationsCollection formationsCollection = new FormationsCollection();
-	private GameBoardController gameBoardController = new GameBoardController();
+	// private FormationCollection FormationCollection = new FormationCollection();
 	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
@@ -90,7 +89,7 @@ public class GameController : MonoBehaviour
 	private void executePlayerMove(string name, FormationPointModel playerMove)
 	{
 		placePlayerPieceOnPost(name);
-		gameBoardController.addPlayerAtPoint(activePlayer, playerMove);
+		GameBoardController.addPlayerAtPoint(activePlayer, playerMove);
 	}
 		
 	// we made the move, do stuff that needs to be done after the move is confirmed 
