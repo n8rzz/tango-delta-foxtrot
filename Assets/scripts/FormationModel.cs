@@ -1,25 +1,23 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public class FormationModel
 {
 	public string formationType;
-	public List<int[]> pointList = new List<int[]>();
+	public List<FormationPointModel> pointList = new List<FormationPointModel>();
 
-	public FormationModel(string fType, List<int[]> pointsToAdd)
+	public FormationModel(string type, List<FormationPointModel> pointsToAdd)
 	{
-		formationType = fType;
+		formationType = type;
 		pointList = pointsToAdd;
 
-//		_addPointsToPointList(pointsToAdd);
+		addPointsToPointList(pointsToAdd);
 	}
 
-//	void _addPointsToPointList(int[][] pointsToAdd)
-//	{
-//		for (var i = 0; i < pointsToAdd.GetLength(0); i++)
-//		{
-//			pointList.Add(pointsToAdd[i]);	
-//		}
-//	}
+	private void addPointsToPointList(List<FormationPointModel> pointsToAdd)
+	{
+		for (var i = 0; i < pointsToAdd.Count; i++)
+		{
+			pointList.Add(pointsToAdd[i]);
+		}
+	}
 }

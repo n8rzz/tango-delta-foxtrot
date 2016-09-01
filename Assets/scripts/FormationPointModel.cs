@@ -1,8 +1,8 @@
 public class FormationPointModel
 {
-    int level;
-    int row;
-    int column;
+    public int level;
+    public int row;
+    public int column;
 
     public FormationPointModel(int level, int row, int column)
     {
