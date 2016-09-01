@@ -8,12 +8,13 @@ public class GameController : MonoBehaviour
 	public GameObject playerTwo;
 	public GameObject turnController;
 	public GameObject gameBoardManager;
-	public GameObject victoryController;
+	// public GameObject victoryController;
 	public GameObject masterGameTimeText;
 	public GameObject elapsedTurnTimeText;
 	public GameObject winnerBannerText;
 
-	private FormationsCollection formationsCollection = new FormationsCollection();
+	// private FormationsCollection formationsCollection = new FormationsCollection();
+	private GameBoardController GameBoardController = new GameBoardController();
 	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
@@ -37,13 +38,13 @@ public class GameController : MonoBehaviour
 		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
 		gameBoardManager = GameObject.FindGameObjectWithTag("gameBoardManager").gameObject;
-		victoryController = GameObject.FindGameObjectWithTag("victoryController").gameObject;
+		// victoryController = GameObject.FindGameObjectWithTag("victoryController").gameObject;
 
         didStart = true;
 		currentGameTime = 0f;
 		winnerBannerText.GetComponent<Text>().text = "";
 
-		_resetTurnTime();
+		resetTurnTime();
 	}
 
 	void Update() 
@@ -54,10 +55,10 @@ public class GameController : MonoBehaviour
 
 	void FixedUpdate() 
 	{
-		string masterGameTimeString = _transformTime(currentGameTime);
+		string masterGameTimeString = transformTime(currentGameTime);
 		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
 
-		string elapsedTurnTimeString = _transformTime(elapsedTurnTime);
+		string elapsedTurnTimeString = transformTime(elapsedTurnTime);
 		elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
 	}
 	
@@ -75,26 +76,26 @@ public class GameController : MonoBehaviour
 		}
 			
 		activeGamePost = postPosition;
-		moveToMake = _extractBoardPositionFromPostName(name);
+		moveToMake = extractBoardPositionFromPostName(name);
 
-		_willExecutePlayerMove(name);
+		willExecutePlayerMove(name);
 		// initiate wait time for undo
 		// StartCoroutine(makeUndoMoveAvailable());
 		// disable click until timer is up
-		_didExecutePlayerMove();
+		didExecutePlayerMove();
 	}
 
 	// place the player piece in the view on the selected post
-	void _willExecutePlayerMove(string name)
+	private void willExecutePlayerMove(string name)
 	{
-		_placePlayerPieceOnPost(name);
+		placePlayerPieceOnPost(name);
 	}
 		
 	// we made the move, do stuff that needs to be done after the move is confirmed 
-	void _didExecutePlayerMove()
+	private void didExecutePlayerMove()
 	{
 		var gameBoardMangerScript = gameBoardManager.GetComponent<GameBoardManager>();
-		var victoryControllerScript = victoryController.GetComponent<VictoryController>();
+		// var victoryControllerScript = victoryController.GetComponent<VictoryController>();
 
 		gameBoardMangerScript.addNewMove(moveToMake, activePlayer);
 		int[][][] currentGameBoard = gameBoardMangerScript.GameBoard;
@@ -102,24 +103,23 @@ public class GameController : MonoBehaviour
 		// FIXME: remove once GameHistory is implemented
 		int currentMovesCount = gameBoardMangerScript.MoveCount;
 
-		// perform win checks
-		// FIXME: abstract to method
-		bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, moveToMake, activePlayer);
-		if (isWinningMove)
-		{
-			// do end game things
+		// FIXME: Move to GameBoardController.isWinningMove
+		// bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, moveToMake, activePlayer);
+		// if (isWinningMove)
+		// {
+		// 	// do end game things
 
-			isComplete = true;
-			// stop timers
-			// show winning formation
-			_buildWinnerText();
-			// show restart button
-			return;
-		}
+		// 	isComplete = true;
+		// 	// stop timers
+		// 	// show winning formation
+		// 	buildWinnerText();
+		// 	// show restart button
+		// 	return;
+		// }
 
-		_changeActivePlayer();
-		_getGamePhase(currentMovesCount);
-		_resetTurnTime();
+		changeActivePlayer();
+		getGamePhase(currentMovesCount);
+		resetTurnTime();
 	}
 
 
@@ -131,7 +131,7 @@ public class GameController : MonoBehaviour
 	/// Adds name to new game object
 	/// Adds tag to new game object
 	/// Makes new game object a child of the playerMovesContainer
-	void _placePlayerPieceOnPost(string postname)
+	private void placePlayerPieceOnPost(string postname)
 	{
 		if (activePlayer == 0) 
 		{
@@ -149,13 +149,13 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-	void _changeActivePlayer()
+	private void changeActivePlayer()
 	{
         var turnScript = turnController.GetComponent<TurnController>();
         activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
-	void _getGamePhase(int currentMoveCount)
+	private void getGamePhase(int currentMoveCount)
 	{  
 		if (currentMoveCount == (int)GamePhase.beginning)
 		{
@@ -171,12 +171,12 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-	void _resetTurnTime()
+	private void resetTurnTime()
 	{
 		elapsedTurnTime = elapsedTurnTimeLimit;
 	}
 
-	void _buildWinnerText()
+	private void buildWinnerText()
 	{
 		winnerBannerText.GetComponent<Text>().text = "Player " + (activePlayer + 1) + " is the winner!";
 	}
@@ -185,7 +185,7 @@ public class GameController : MonoBehaviour
 	/// Helper Methods
 	//////////////////////////////////////////////////////////////////
 	
-	int[] _extractBoardPositionFromPostName(string postname)
+	private int[] extractBoardPositionFromPostName(string postname)
 	{
 		// todo: optimize, possibly with below strategy
 		// string[] test = new string[] {"1", "2", "3", "4", "5"};
@@ -202,7 +202,7 @@ public class GameController : MonoBehaviour
 		return gameBoardPosition;
 	}
 
-	string _transformTime(float time) 
+	private string transformTime(float time) 
 	{
 		int minutes = Mathf.FloorToInt(time / 60F);
 		int seconds = Mathf.FloorToInt(time - minutes * 60);
