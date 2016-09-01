@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class InteractWithGameBoardPost : MonoBehaviour 
 {
@@ -40,14 +39,13 @@ public class InteractWithGameBoardPost : MonoBehaviour
 		Vector3 postPosition = GetPositionForNewPiece();
 		string gameBoardPosition = piecesOnPost + "-" + this.name;
 
-		gameController.GetComponent<GameController>().willMove(postPosition, gameBoardPosition);
+		gameController.GetComponent<GameController>().willExecutePlayerMove(postPosition, gameBoardPosition);
 		// FIXME: remove after ln: 36 is implemented
 		piecesOnPost++;
 	}
 	  
 	void OnMouseUp() 
 	{}
-
 
 	void ChangePostColorToOriginal()
 	{

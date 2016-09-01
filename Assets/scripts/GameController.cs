@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour
 	public GameObject winnerBannerText;
 
 	// private FormationsCollection formationsCollection = new FormationsCollection();
-	private GameBoardController GameBoardController = new GameBoardController();
+	private GameBoardController gameBoardController = new GameBoardController();
 	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
@@ -68,7 +68,7 @@ public class GameController : MonoBehaviour
 	//////////////////////////////////////////////////////////////////
 
 	// entry into this method comes from InteractWithGameBoardPost.OnMouseDown
-	public void willMove(Vector3 postPosition, string name)
+	public void willExecutePlayerMove(Vector3 postPosition, string postName)
 	{
 		if (!didStart || isComplete)
 		{
@@ -76,9 +76,10 @@ public class GameController : MonoBehaviour
 		}
 			
 		activeGamePost = postPosition;
-		moveToMake = extractBoardPositionFromPostName(name);
+		moveToMake = extractBoardPositionFromPostName(postName);
+		FormationPointModel playerMove = new FormationPointModel(moveToMake[0], moveToMake[1], moveToMake[2]);
 
-		willExecutePlayerMove(name);
+		executePlayerMove(postName, playerMove);
 		// initiate wait time for undo
 		// StartCoroutine(makeUndoMoveAvailable());
 		// disable click until timer is up
@@ -86,22 +87,23 @@ public class GameController : MonoBehaviour
 	}
 
 	// place the player piece in the view on the selected post
-	private void willExecutePlayerMove(string name)
+	private void executePlayerMove(string name, FormationPointModel playerMove)
 	{
 		placePlayerPieceOnPost(name);
+		gameBoardController.addPlayerAtPoint(activePlayer, playerMove);
 	}
 		
 	// we made the move, do stuff that needs to be done after the move is confirmed 
 	private void didExecutePlayerMove()
 	{
-		var gameBoardMangerScript = gameBoardManager.GetComponent<GameBoardManager>();
+		// var gameBoardMangerScript = gameBoardManager.GetComponent<GameBoardManager>();
 		// var victoryControllerScript = victoryController.GetComponent<VictoryController>();
 
-		gameBoardMangerScript.addNewMove(moveToMake, activePlayer);
-		int[][][] currentGameBoard = gameBoardMangerScript.GameBoard;
+		// gameBoardMangerScript.addNewMove(moveToMake, activePlayer);
+		// int[][][] currentGameBoard = gameBoardMangerScript.GameBoard;
 
 		// FIXME: remove once GameHistory is implemented
-		int currentMovesCount = gameBoardMangerScript.MoveCount;
+		// int currentMovesCount = gameBoardMangerScript.MoveCount;
 
 		// FIXME: Move to GameBoardController.isWinningMove
 		// bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, moveToMake, activePlayer);
@@ -118,7 +120,7 @@ public class GameController : MonoBehaviour
 		// }
 
 		changeActivePlayer();
-		getGamePhase(currentMovesCount);
+		// getGamePhase(currentMovesCount);
 		resetTurnTime();
 	}
 

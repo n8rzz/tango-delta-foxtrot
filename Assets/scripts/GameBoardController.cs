@@ -39,43 +39,43 @@
 
     // }
 
-    // public int findPlayerForPoint(FormationPointModel point)
-    // {
-    //     int level = point.level;
-    //     int row = point.row;
-    //     int column = point.column;
+    public int findPlayerForPoint(FormationPointModel point)
+    {
+        int level = point.level;
+        int row = point.row;
+        int column = point.column;
 
-    //     return this.gameBoard[level][row][column];
-    // }
+        return gameBoard[level][row][column];
+    }
 
 
-    // private bool isPointAvailable(FormationPointModel point)
-    // {
-    //     return this.findPlayerForPoint(point) === null;
-    // }
+    private bool isPointAvailable(FormationPointModel point)
+    {
+        return findPlayerForPoint(point) != -1;
+    }
 
-    // private bool isValidMove(FormationPointModel point)
-    // {
-    //     if (point.level === 0) {
-    //         return isPointAvailable(point);
-    //     }
+    private bool isValidMove(FormationPointModel point)
+    {
+        if (point.level == 0) {
+            return isPointAvailable(point);
+        }
 
-    //     int level = point.level - 1;
-    //     FormationPointModel comparePoint = new FormationPointModel(level, point.row, point.column);
+        int level = point.level - 1;
+        FormationPointModel comparePoint = new FormationPointModel(level, point.row, point.column);
 
-    //     return isPointAvailable(point) && findPlayerForPoint(comparePoint) !== null;
-    // }
+        return isPointAvailable(point) && (findPlayerForPoint(comparePoint) != -1);
+    }
 
-    // private bool addPlayerAtPoint(int player, FormationPointModel point)
-    // {
-    //     if (!isValidMove(point)) {
-    //         return false;
-    //     }
+    public bool addPlayerAtPoint(int player, FormationPointModel point)
+    {
+        if (!isValidMove(point)) {
+            return false;
+        }
 
-    //     this.gameBoard[point.level][point.row][point.column] = player;
+        gameBoard[point.level][point.row][point.column] = player;
 
-    //     return true;
-    // }
+        return true;
+    }
 
     // private void addToHistory(int player, FormationPointModel point)
     // {
