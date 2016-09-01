@@ -3,7 +3,6 @@
 public class InteractWithGameBoardPost : MonoBehaviour 
 {
 	public GameObject gameController;
-//	public GameObject gameBoardController;
 	public float playerPieceYOffset;
 	// TODO: grab the height from the game object
 	public float gamePieceY = 2;
@@ -43,9 +42,6 @@ public class InteractWithGameBoardPost : MonoBehaviour
 		// FIXME: remove after ln: 36 is implemented
 		piecesOnPost++;
 	}
-	  
-	void OnMouseUp() 
-	{}
 
 	void ChangePostColorToOriginal()
 	{

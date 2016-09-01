@@ -82,18 +82,18 @@ public class GameController : MonoBehaviour
 		// initiate wait time for undo
 		// StartCoroutine(makeUndoMoveAvailable());
 		// disable click until timer is up
-		didExecutePlayerMove();
+		didExecutePlayerMove(playerMove);
 	}
 
 	// place the player piece in the view on the selected post
 	private void executePlayerMove(string name, FormationPointModel playerMove)
 	{
-		placePlayerPieceOnPost(name);
 		GameBoardController.addPlayerAtPoint(activePlayer, playerMove);
+		placePlayerPieceOnPost(name);
 	}
 		
 	// we made the move, do stuff that needs to be done after the move is confirmed 
-	private void didExecutePlayerMove()
+	private void didExecutePlayerMove(FormationPointModel playerMove)
 	{
 		// var gameBoardMangerScript = gameBoardManager.GetComponent<GameBoardManager>();
 		// var victoryControllerScript = victoryController.GetComponent<VictoryController>();

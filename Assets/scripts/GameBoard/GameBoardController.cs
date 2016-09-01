@@ -30,35 +30,11 @@
             new int[] {-1, -1, -1, -1}
         }
     };
+
     static public int[][][] GameBoard {
         get { return gameBoard; }
     }
 
-    public static int findPlayerForPoint(FormationPointModel point)
-    {
-        int level = point.level;
-        int row = point.row;
-        int column = point.column;
-
-        return gameBoard[level][row][column];
-    }
-
-    public static bool isPointAvailable(FormationPointModel point)
-    {
-        return findPlayerForPoint(point) != -1;
-    }
-
-    public static bool isValidMove(FormationPointModel point)
-    {
-        if (point.level == 0) {
-            return isPointAvailable(point);
-        }
-
-        int level = point.level - 1;
-        FormationPointModel comparePoint = new FormationPointModel(level, point.row, point.column);
-
-        return isPointAvailable(point) && (findPlayerForPoint(comparePoint) != -1);
-    }
 
     public static bool addPlayerAtPoint(int player, FormationPointModel point)
     {
@@ -70,6 +46,35 @@
 
         return true;
     }
+
+    public static bool isValidMove(FormationPointModel point)
+    {
+        if (point.isPointOnBottomLevel())
+        {
+            return isPointAvailable(point); 
+        }
+
+        int level = point.findLevelBelowPoint();
+        FormationPointModel comparePoint = new FormationPointModel(level, point.row, point.column);
+
+        return isPointAvailable(point) && (findPlayerForPoint(comparePoint) != -1);
+    }
+
+    public static bool isPointAvailable(FormationPointModel point)
+    {
+        return findPlayerForPoint(point) != -1;
+    }
+
+    public static int findPlayerForPoint(FormationPointModel point)
+    {
+        int level = point.level;
+        int row = point.row;
+        int column = point.column;
+
+        return gameBoard[level][row][column];
+    }
+
+
 
     // public static void addToHistory(int player, FormationPointModel point)
     // {

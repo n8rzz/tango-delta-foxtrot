@@ -10,4 +10,14 @@
         this.row = row;
         this.column = column;
     }
+
+    public bool isPointOnBottomLevel()
+    {
+        return level == 0;
+    }
+
+    public int findLevelBelowPoint()
+    {
+        return level - 1;
+    }
 }
