@@ -7,8 +7,8 @@ public class FormationModel
 
 	public FormationModel(string type, List<FormationPointModel> pointsToAdd)
 	{
-		formationType = type;
-		pointList = pointsToAdd;
+		this.formationType = type;
+		this.pointList = pointsToAdd;
 
 		addPointsToPointList(pointsToAdd);
 	}

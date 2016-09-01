@@ -1,200 +1,223 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public static class FormationModelBuilder
 {
-	static private int MAX_LENGTH = 4;
+    static private int MAX_LENGTH = 4;
 
-	public static List<int[][]> buildRows(string variation)
-	{
-		List<int[][]> allRows = new List<int[][]>();
+    public static List<FormationModel> buildFormationModelsFromPossibleFormations()
+    {
+        List<FormationModel> formationModelList = new List<FormationModel>();
+        formationModelList.AddRange(buildRows("NATURAL"));
+        formationModelList.AddRange(buildRows("ASCENDING"));
+        formationModelList.AddRange(buildRows("DESCENDING"));
+        formationModelList.AddRange(buildColumns("NATURAL"));
+        formationModelList.AddRange(buildColumns("ASCENDING"));
+        formationModelList.AddRange(buildColumns("DESCENDING"));
+        formationModelList.AddRange(buildDiagonals("NATURAL"));
+        formationModelList.AddRange(buildDiagonals("ASCENDING"));
+        formationModelList.AddRange(buildDiagonals("DESCENDING"));
+        formationModelList.AddRange(buildStacks());
 
-		switch (variation) 
-		{
-			case "NATURAL":
-				for (var level = 0; level < MAX_LENGTH; level++) 
-				{
-					for (var row = 0; row < MAX_LENGTH; row++) 
-					{
-						int[][] singleRow = new int[MAX_LENGTH][];
+        return formationModelList;
+    }
 
-						for (var cell = 0; cell < MAX_LENGTH; cell++) 
-						{
-							int[] singleCellInRow = new int[] {level, row, cell};
-//							Debug.Log("--- [" + singleCellInRow[0] + ", " + singleCellInRow[1] + ", " + singleCellInRow[2] + "]");
-								
-							singleRow[row] = singleCellInRow;
-						}
-						
-						allRows.Add(singleRow);
-					}
-				}
+    private static List<FormationModel> buildRows(string variation)
+    {
+        List<FormationModel> allRows = new List<FormationModel>();
 
-				break;
-			case "ASCENDING":
-				for (var row = 0; row < MAX_LENGTH; row++) {
-					int[][] singleRow = new int[MAX_LENGTH][];
+        switch (variation)
+        {
+            case "NATURAL":
+                for (var level = 0; level < MAX_LENGTH; level++) {
+                    for (var row = 0; row < MAX_LENGTH; row++) {
+                        List<FormationPointModel> singleRow = new List<FormationPointModel>();
 
-					for (var levelAndCell = 0; levelAndCell < MAX_LENGTH; levelAndCell++) {
-						int[] singleCellInRow = new int[] {levelAndCell, row, levelAndCell};
-						
-						singleRow[row] = singleCellInRow;
-					}
+                        for (var cell = 0; cell < MAX_LENGTH; cell++) {
+                            FormationPointModel singleCellInRow = new FormationPointModel(level, row, cell);
 
-					allRows.Add(singleRow);
-				}
+                            singleRow.Add(singleCellInRow);
+                        }
 
-				break;
-			case "DESCENDING":
-				for (var row = 0; row < MAX_LENGTH; row++) {
-					var decrementor = 3;
-					int[][] singleRow = new int[MAX_LENGTH][];
+                        FormationModel formationModelForRow = new FormationModel("ROW_NATURAL", singleRow);
+                        allRows.Add(formationModelForRow);
+                    }
+                }
 
-					for (var cell = 0; cell < MAX_LENGTH; cell++) {
-						int[] singleCellInRow = new int[] {decrementor, row, cell};
-						
-						singleRow[row] = singleCellInRow;
-						decrementor--;
-					}
+                break;
+            case "ASCENDING":
+                for (var row = 0; row < MAX_LENGTH; row++) {
+                    List<FormationPointModel> singleRow = new List<FormationPointModel>();
 
-					allRows.Add(singleRow);
-				}
+                    for (var levelAndCell = 0; levelAndCell < MAX_LENGTH; levelAndCell++) {
+                        FormationPointModel singleCellInRow = new FormationPointModel(levelAndCell, row, levelAndCell);
 
-				break;
-			default:
-				break;
-		}
-			
-		return allRows;
-	}
+                        singleRow.Add(singleCellInRow);
+                    }
 
-	public static List<int[][]> buildColumns(string variation)
-	{
-		List<int[][]> allColumns = new List<int[][]>();
+                    FormationModel formationModelForRow = new FormationModel("ROW_ASCENDING", singleRow);
+                    allRows.Add(formationModelForRow);
+                }
 
-		switch (variation) 
-		{
-			case "NATURAL":
-				for (var level = 0; level < MAX_LENGTH; level++) {
-					for (var column = 0; column < MAX_LENGTH; column++) {
-						int[][] singleColumn = new int[MAX_LENGTH][];
+                break;
+            case "DESCENDING":
+                for (var row = 0; row < MAX_LENGTH; row++) {
+                    var decrementor = 3;
+                    List<FormationPointModel> singleRow = new List<FormationPointModel>();
 
-						for (var row = 0; row < MAX_LENGTH; row++) {
-							singleColumn[column] = new int[] {level, row, column};
-						}
+                    for (var cell = 0; cell < MAX_LENGTH; cell++) {
+                        FormationPointModel singleCellInRow = new FormationPointModel(decrementor, row, cell);
 
-						allColumns.Add(singleColumn);
-					}
-				}
+                        singleRow.Add(singleCellInRow);
+                        decrementor--;
+                    }
 
-				break;
-			case "ASCENDING":
-				for (var column = 0; column < MAX_LENGTH; column++) {
-					int[][] singleColumn = new int[MAX_LENGTH][];
+                    FormationModel formationModelForRow = new FormationModel("ROW_DESCENDING", singleRow);
+                    allRows.Add(formationModelForRow);
+                }
 
-					for (var levelAndRow = 0; levelAndRow < MAX_LENGTH; levelAndRow++) {
-						singleColumn[column] = new int[] {levelAndRow, levelAndRow, column};
-					}
+                break;
+            default:
+                break;
+        }
 
-					allColumns.Add(singleColumn);
-				}
+        return allRows;
+    }
 
-				break;
-			case "DESCENDING":
-				for (var column = 0; column < MAX_LENGTH; column++) {
-					var decrementor = 3;
-					int[][] singleColumn = new int[MAX_LENGTH][];
+    private static List<FormationModel> buildColumns(string variation)
+    {
+        List<FormationModel> allColumns = new List<FormationModel>();
 
-					for (var row = 0; row < MAX_LENGTH; row++) {
-						singleColumn[column] = new int[] {decrementor, column, row};
-						decrementor--;
-					}
+        switch (variation)
+        {
+            case "NATURAL":
+                for (var level = 0; level < MAX_LENGTH; level++) {
+                    for (var column = 0; column < MAX_LENGTH; column++) {
+                        List<FormationPointModel> singleColumn = new List<FormationPointModel>();
 
-					allColumns.Add(singleColumn);
-				}
+                        for (var row = 0; row < MAX_LENGTH; row++) {
+                            singleColumn.Add(new FormationPointModel(level, row, column));
+                        }
 
-				break;
-			default:
-				break;
-		}
+                        FormationModel formationModelForColumn = new FormationModel("COLUMN_NATURAL", singleColumn);
+                        allColumns.Add(formationModelForColumn);
+                    }
+                }
 
-		return allColumns;
-	}
+                break;
+            case "ASCENDING":
+                for (var column = 0; column < MAX_LENGTH; column++) {
+                    List<FormationPointModel> singleColumn = new List<FormationPointModel>();
 
-	public static List<int[][]> buildDiagonals(string variation)
-	{
-		int incrementor = 0;
-		int decrementor = 3;
-		int[][] topDiagonal = new int[MAX_LENGTH][];
-		int[][] bottomDiagonal = new int[MAX_LENGTH][];
-		List<int[][]> diagonals = new List<int[][]>();;
+                    for (var levelAndRow = 0; levelAndRow < MAX_LENGTH; levelAndRow++) {
+                        singleColumn.Add(new FormationPointModel(levelAndRow, levelAndRow, column));
+                    }
 
-		switch (variation) {
-			case "NATURAL":
-				for (var level = 0; level < MAX_LENGTH; level++) {
-					decrementor = 3;
+                    FormationModel formationModelForColumn = new FormationModel("COLUMN_ASCENDING", singleColumn);
+                    allColumns.Add(formationModelForColumn);
+                }
 
-					for (var i = 0; i < MAX_LENGTH; i++) {
-						topDiagonal[i] = new int[] {level, i, i};
-						bottomDiagonal[i] = new int[] {level, decrementor, i};
+                break;
+            case "DESCENDING":
+                for (var column = 0; column < MAX_LENGTH; column++) {
+                    var decrementor = 3;
+                    List<FormationPointModel> singleColumn = new List<FormationPointModel>();
 
-						decrementor--;
-					}
+                    for (var row = 0; row < MAX_LENGTH; row++) {
+                        singleColumn.Add(new FormationPointModel(decrementor, column, row));
+                        decrementor--;
+                    }
 
-					diagonals.Add(topDiagonal);
-					diagonals.Add(bottomDiagonal);
-				}
+                    FormationModel formationModelForColumn = new FormationModel("COLUMN_DESCENDING", singleColumn);
+                    allColumns.Add(formationModelForColumn);
+                }
 
-				break;
-			case "ASCENDING":
-				for (var i = 0; i < MAX_LENGTH; i++) {
-					topDiagonal[i] = new int[] {i, i, i};
-					bottomDiagonal[i] = new int[] {i, decrementor, i};
+                break;
+            default:
+                break;
+        }
 
-					decrementor--;
-				}
+        return allColumns;
+    }
 
-				diagonals.Add(topDiagonal);
-				diagonals.Add(bottomDiagonal);
+    private static List<FormationModel> buildDiagonals(string variation)
+    {
+        int incrementor = 0;
+        int decrementor = 3;
+        List<FormationPointModel> topDiagonal = new List<FormationPointModel>();
+        List<FormationPointModel> bottomDiagonal = new List<FormationPointModel>();
+        List<FormationModel> diagonals = new List<FormationModel>();
 
-				break;
-			case "DESCENDING":
-				for (var i = 3; i >= 0; i--) {
-				topDiagonal[i] = new int[] {i, incrementor, incrementor};
-				bottomDiagonal[i] = new int[] {i, i, incrementor};
+        switch (variation) {
+            case "NATURAL":
+                for (var level = 0; level < MAX_LENGTH; level++) {
+                    decrementor = 3;
 
-					incrementor++;
-				}
+                    for (var i = 0; i < MAX_LENGTH; i++) {
+                        topDiagonal.Add(new FormationPointModel(level, i, i));
+                        bottomDiagonal.Add(new FormationPointModel(level, decrementor, i));
 
-				diagonals.Add(topDiagonal);
-				diagonals.Add(bottomDiagonal);
+                        decrementor--;
+                    }
+                    FormationModel topNaturalDiagonalFormationToAdd = new FormationModel("DIAGONAL_NATURAL", topDiagonal);
+                    FormationModel bottomNaturalDiagonalFormationToAdd = new FormationModel("DIAGONAL_NATURAL", bottomDiagonal);
+                    diagonals.Add(topNaturalDiagonalFormationToAdd);
+                    diagonals.Add(bottomNaturalDiagonalFormationToAdd);
+                }
 
-				break;
-			default:
-				break;
-		}
+                break;
+            case "ASCENDING":
+                for (var i = 0; i < MAX_LENGTH; i++) {
+                    topDiagonal.Add(new FormationPointModel(i, i, i));
+                    bottomDiagonal.Add(new FormationPointModel(i, decrementor, i));
 
-		return diagonals;
-	}
+                    decrementor--;
+                }
 
-	public static List<int[][]> buildStacks()
-	{
-		List<int[][]> allStacks = new List<int[][]>();
+                FormationModel topAscendingDiagonalFormationToAdd = new FormationModel("DIAGONAL_ASCENDING", topDiagonal);
+                FormationModel bottomAscendingDiagonalFormationToAdd = new FormationModel("DIAGONAL_ASCENDING", bottomDiagonal);
+                diagonals.Add(topAscendingDiagonalFormationToAdd);
+                diagonals.Add(bottomAscendingDiagonalFormationToAdd);
 
-		for (var row = 0; row < MAX_LENGTH; row++) {
-			for (var cell = 0; cell < MAX_LENGTH; cell++) {
-				int[][] singleStack = new int[MAX_LENGTH][];
+                break;
+            case "DESCENDING":
+                for (var i = 3; i >= 0; i--) {
+                    topDiagonal.Add(new FormationPointModel(i, incrementor, incrementor));
+                    bottomDiagonal.Add(new FormationPointModel(i, i, incrementor));
 
-				for (var level = 0; level < MAX_LENGTH; level++) {
-					int[] stack = new int[] {level, row, cell};
-					singleStack[cell] = stack;
-				}
+                    incrementor++;
+                }
 
-				allStacks.Add(singleStack);
-			}
-		}
+                FormationModel topDescendingDiagonalFormationToAdd = new FormationModel("DIAGONAL_DESCENDING", topDiagonal);
+                FormationModel bottomDescendingDiagonalFormationToAdd = new FormationModel("DIAGONAL_DESCENDING", bottomDiagonal);
+                diagonals.Add(topDescendingDiagonalFormationToAdd);
+                diagonals.Add(bottomDescendingDiagonalFormationToAdd);
 
-		return allStacks;
-	}
+                break;
+            default:
+                break;
+        }
+
+        return diagonals;
+    }
+
+    private static List<FormationModel> buildStacks()
+    {
+        List<FormationModel> allStacks = new List<FormationModel>();
+
+        for (var row = 0; row < MAX_LENGTH; row++) {
+            for (var cell = 0; cell < MAX_LENGTH; cell++) {
+                List<FormationPointModel> singleStack = new List<FormationPointModel>();
+
+                for (var level = 0; level < MAX_LENGTH; level++) {
+                    FormationPointModel stack = new FormationPointModel(level, row, cell);
+                    singleStack.Add(stack);
+                }
+
+                FormationModel singleStackFormationToAdd = new FormationModel("STACK_NATURAL", singleStack);
+                allStacks.Add(singleStackFormationToAdd);
+            }
+        }
+
+        return allStacks;
+    }
 }
