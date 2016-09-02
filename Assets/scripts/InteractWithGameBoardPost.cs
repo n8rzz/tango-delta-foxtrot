@@ -17,33 +17,41 @@ public class InteractWithGameBoardPost : MonoBehaviour
 	{
 		postColor = GetComponent<Renderer>().material.color;
 	}
-	
 
 	void OnMouseEnter() 
 	{
-		ChangePostColorToHover();
+		changePostToHoverColor();
 	}
 
 	void OnMouseExit()
 	{
-		ChangePostColorToOriginal();
+		revertPostToInitialColor();
 	}
 
 	void OnMouseDown() 
 	{
 		// FIXME: gameBoardController.isValidMove
 		if (piecesOnPost > maxPosition) 
-			return;
+		{
+				return;
+		}
 
-		Vector3 postPosition = GetPositionForNewPiece();
-		string gameBoardPosition = piecesOnPost + "-" + this.name;
+		Vector3 postPosition = calculateNextPiecePosition();
+		string gameBoardPosition = buildGameBoardPositionFromPiecesOnPostAndName();
 
 		gameController.GetComponent<GameController>().willExecutePlayerMove(postPosition, gameBoardPosition);
-		// FIXME: remove after ln: 36 is implemented
 		piecesOnPost++;
 	}
 
-	void ChangePostColorToOriginal()
+	// piecesOnPost = level
+	// this.name = 'row-column'
+	// returns 'level-row-column'
+	private string buildGameBoardPositionFromPiecesOnPostAndName()
+	{
+		return piecesOnPost + "-" + this.name;
+	}
+
+	private void revertPostToInitialColor()
 	{
 		if (!didClick)
 		{
@@ -51,17 +59,12 @@ public class InteractWithGameBoardPost : MonoBehaviour
 		}
 	}
 
-	void ChangePostColorToHover()
+	private void changePostToHoverColor()
 	{
 		GetComponent<Renderer>().material.color = Color.green;
 	}
 
-	void ChangePostColorToActive()
-	{
-		GetComponent<Renderer>().material.color = Color.yellow;
-	}
-
-	private Vector3 GetPositionForNewPiece() 
+	private Vector3 calculateNextPiecePosition() 
 	{
 		playerPieceYOffset = (gamePieceY * piecesOnPost) + 0.5f;
 //		playerPieceYOffset = gamePieceY * piecesOnPost;

@@ -4,6 +4,12 @@
     public int row;
     public int column;
 
+    public FormationPointModel(int[] playerMove)
+    {
+        this.level = playerMove[0];
+        this.row = playerMove[1];
+        this.column = playerMove[2];
+    }
 
     public FormationPointModel(int level, int row, int column)
     {

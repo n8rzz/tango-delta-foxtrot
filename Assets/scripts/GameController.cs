@@ -70,6 +70,7 @@ public class GameController : MonoBehaviour
 
 		int[] moveToMake = extractBoardPositionFromPostName(postName);
 		FormationPointModel playerMove = new FormationPointModel(moveToMake[0], moveToMake[1], moveToMake[2]);
+		PlayerMoveModel nextMove = new PlayerMoveModel(activePlayer, postName);
 
 		executePlayerMove(postName, playerMove);
 		// TODO: undo last move goes here 
@@ -108,7 +109,7 @@ public class GameController : MonoBehaviour
 		}
 
 		changeActivePlayer();
-		// getGamePhase(currentMovesCount);
+		// getCurrentGamePhase(currentMovesCount);
 		resetTurnTime();
 	}
 
@@ -145,7 +146,7 @@ public class GameController : MonoBehaviour
         activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
-	private void getGamePhase(int currentMoveCount)
+	private void getCurrentGamePhase(int currentMoveCount)
 	{  
 		if (currentMoveCount == (int)GamePhase.beginning)
 		{
@@ -174,7 +175,7 @@ public class GameController : MonoBehaviour
 	//////////////////////////////////////////////////////////////////
 	/// Helper Methods
 	//////////////////////////////////////////////////////////////////
-	
+	// Convert the string postname to an int[]. 
 	private int[] extractBoardPositionFromPostName(string postname)
 	{
 		// todo: optimize, possibly with below strategy
@@ -182,11 +183,11 @@ public class GameController : MonoBehaviour
 		// int[] arr = Array.ConvertAll<string, int>(test, int.Parse);
 
 		int[] gameBoardPosition = new int[3];
-		string[] locations = postname.Split('-');
+		string[] positions = postname.Split('-');
 
-		for (int i = 0; i < locations.Length; i++)
+		for (int i = 0; i < positions.Length; i++)
 		{
-			gameBoardPosition[i] = System.Int32.Parse(locations[i]);
+			gameBoardPosition[i] = System.Int32.Parse(positions[i]);
 		}
 
 		return gameBoardPosition;
