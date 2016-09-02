@@ -8,7 +8,6 @@ public class GameController : MonoBehaviour
 	public GameObject playerTwo;
 	public GameObject turnController;
 	public GameObject gameBoardManager;
-	// public GameObject victoryController;
 	public GameObject masterGameTimeText;
 	public GameObject elapsedTurnTimeText;
 	public GameObject winnerBannerText;
@@ -37,7 +36,6 @@ public class GameController : MonoBehaviour
 		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
 		gameBoardManager = GameObject.FindGameObjectWithTag("gameBoardManager").gameObject;
-		// victoryController = GameObject.FindGameObjectWithTag("victoryController").gameObject;
 
         didStart = true;
 		currentGameTime = 0f;
@@ -95,28 +93,23 @@ public class GameController : MonoBehaviour
 	// we made the move, do stuff that needs to be done after the move is confirmed 
 	private void didExecutePlayerMove(FormationPointModel playerMove)
 	{
-		// var gameBoardMangerScript = gameBoardManager.GetComponent<GameBoardManager>();
-		// var victoryControllerScript = victoryController.GetComponent<VictoryController>();
-
-		// gameBoardMangerScript.addNewMove(moveToMake, activePlayer);
-		// int[][][] currentGameBoard = gameBoardMangerScript.GameBoard;
-
 		// FIXME: remove once GameHistory is implemented
 		// int currentMovesCount = gameBoardMangerScript.MoveCount;
 
 		// FIXME: Move to GameBoardController.isWinningMove
-		// bool isWinningMove = victoryControllerScript.IsWinningMove(currentGameBoard, moveToMake, activePlayer);
-		// if (isWinningMove)
-		// {
-		// 	// do end game things
+		FormationModel winningFormation = GameBoardController.findWinningFormation(activePlayer, playerMove);
+		
+		if (winningFormation != null)
+		{
+			// do end game things
 
-		// 	isComplete = true;
-		// 	// stop timers
-		// 	// show winning formation
-		// 	buildWinnerText();
-		// 	// show restart button
-		// 	return;
-		// }
+			isComplete = true;
+			// stop timers
+			// show winning formation
+			buildWinnerText();
+			// show restart button
+			return;
+		}
 
 		changeActivePlayer();
 		// getGamePhase(currentMovesCount);

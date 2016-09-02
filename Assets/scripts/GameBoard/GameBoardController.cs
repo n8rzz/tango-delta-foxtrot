@@ -1,4 +1,6 @@
-﻿public static class GameBoardController
+﻿using System.Collections.Generic;
+
+public static class GameBoardController
 {
 
     static FormationCollection FormationCollection = new FormationCollection();
@@ -62,7 +64,7 @@
 
     public static bool isPointAvailable(FormationPointModel point)
     {
-        return findPlayerForPoint(point) != -1;
+        return findPlayerForPoint(point) == -1;
     }
 
     public static int findPlayerForPoint(FormationPointModel point)
@@ -70,47 +72,48 @@
         int level = point.level;
         int row = point.row;
         int column = point.column;
-
-        return gameBoard[level][row][column];
+        int playerAtPoint = gameBoard[level][row][column]; 
+        
+        return playerAtPoint;
     }
-
-
 
     // public static void addToHistory(int player, FormationPointModel point)
     // {
     //     this.gameHistory.addPlayerMoveToHistory(player, point);
     // }
 
-    // public static Object findWinningFormation(int player, FormationPointModel point)
-    // {
-    //     if (gameHistory.Count > 7)
-    //     {
-    //         List<FormationModel> formations = FormationCollection.filterFormationsForPoint(point);
+    public static FormationModel findWinningFormation(int player, FormationPointModel point)
+    {
+        // if (gameHistory.Count > 7)
+        // {
+            List<FormationModel> formations = FormationCollection.filterFormationsForPoint(point);
 
-    //         for (var i = 0; i < formations.Count; i++)
-    //         {
-    //             if (isWinningFormation(player, formations[i].points))
-    //             {
-    //                 return formation;
-    //             }
-    //         }
-    //     }
+            for (var i = 0; i < formations.Count; i++)
+            {
+                FormationModel formation = formations[i];
 
-    //     return null;
-    // }
+                if (isWinningFormation(player, formations[i].points))
+                {
+                    return formation;
+                }
+            }
+        // }
 
-    // private static bool isWinningFormation(int player, FormationModel formationPoints)
-    // {
-    //     for (var i = 0; i < formationPoints.length; i++)
-    //     {
-    //         FormationPointModel point = formationPoints[i];
+        return null;
+    }
 
-    //         if (findPlayerForPoint(point) !== player)
-    //         {
-    //             return false;
-    //         }
-    //     }
+    private static bool isWinningFormation(int player, List<FormationPointModel> formationPoints)
+    {
+        for (var i = 0; i < formationPoints.Count; i++)
+        {
+            FormationPointModel point = formationPoints[i];
 
-    //     return true;
-    // }
+            if (findPlayerForPoint(point) != player)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

@@ -4,6 +4,7 @@
     public int row;
     public int column;
 
+
     public FormationPointModel(int level, int row, int column)
     {
         this.level = level;

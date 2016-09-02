@@ -12,7 +12,7 @@ public class FormationCollection
         addFormationListToCollection(possibleFormations);
     }
 
-    void addFormationListToCollection(List<FormationModel> formationList)
+    private void addFormationListToCollection(List<FormationModel> formationList)
     {
         for (var i = 0; i < formationList.Count; i++)
         {
@@ -20,8 +20,25 @@ public class FormationCollection
         }
     }
 
-    void addFormationToCollection(FormationModel formationToAdd)
+    private void addFormationToCollection(FormationModel formationToAdd)
     {
         this.formations.Add(formationToAdd);
+    }
+
+    public List<FormationModel> filterFormationsForPoint(FormationPointModel point)
+    {
+        List<FormationModel> filteredFormations = new List<FormationModel>();
+
+        for (var i = 0; i < this.formations.Count; i++)
+        {
+            FormationModel formation = this.formations[i];
+
+            if (formation.isPointWithinFormation(point))
+            {
+                filteredFormations.Add(formation);
+            }
+        }
+
+        return filteredFormations;
     }
 }
