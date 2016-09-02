@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class RestartGameButtonController : MonoBehaviour 
 {
-
 	public GameObject resetGameController;
 
 	void Start () 
@@ -13,10 +11,7 @@ public class RestartGameButtonController : MonoBehaviour
 
 	public void onClickRestartGameButton()
 	{
-//		Debug.Log("Click!");
-
 		var resetGameControllerScript = resetGameController.GetComponent<ResetGameController>();
 		resetGameControllerScript.resetGame();
 	}
-
 }

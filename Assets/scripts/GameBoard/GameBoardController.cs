@@ -3,6 +3,7 @@
 public static class GameBoardController
 {
 
+    private static int INVALID_PLAYER = -1;
     static FormationCollection FormationCollection = new FormationCollection();
     // GameHistory gameHistory = new GameHistory();
     static int[][][] gameBoard =
@@ -59,12 +60,12 @@ public static class GameBoardController
         int level = point.findLevelBelowPoint();
         FormationPointModel comparePoint = new FormationPointModel(level, point.row, point.column);
 
-        return isPointAvailable(point) && (findPlayerForPoint(comparePoint) != -1);
+        return isPointAvailable(point) && (findPlayerForPoint(comparePoint) != INVALID_PLAYER);
     }
 
     public static bool isPointAvailable(FormationPointModel point)
     {
-        return findPlayerForPoint(point) == -1;
+        return findPlayerForPoint(point) == INVALID_PLAYER;
     }
 
     public static int findPlayerForPoint(FormationPointModel point)
@@ -115,5 +116,20 @@ public static class GameBoardController
         }
 
         return true;
+    }
+
+    public static void resetGameBoard() 
+    {
+        for (var level = 0; level < gameBoard.GetLength(0); level++) 
+        {
+            for (var row = 0; row < gameBoard.GetLength(0); row++) 
+            {
+                for (var column = 0; column < gameBoard.GetLength(0); column++) 
+                {
+                    gameBoard[level][row][column] = INVALID_PLAYER;
+                }
+
+            }
+        }
     }
 }

@@ -107,7 +107,7 @@ public class GameController : MonoBehaviour
 			// stop timers
 			// show winning formation
 			buildWinnerText();
-			// show restart button
+			
 			return;
 		}
 

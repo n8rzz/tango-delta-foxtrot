@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class TurnController : MonoBehaviour 
 {	
@@ -18,7 +17,7 @@ public class TurnController : MonoBehaviour
 	{
 		currentPlayer = 0;
 
-		_setCurrentPlayerText();
+		setCurrentPlayerText();
 	}
 	
 
@@ -32,24 +31,20 @@ public class TurnController : MonoBehaviour
 	{
 		currentPlayer = (currentPlayer == 0) ? 1 : 0;
 
-		_setCurrentPlayerText();
+		setCurrentPlayerText();
 
 		return currentPlayer;
 	}
 	
 
-	void _setCurrentPlayerText()
+	private void setCurrentPlayerText()
 	{
 		currentPlayerText.GetComponent<Text>().text = "Current Player: " + (currentPlayer + 1).ToString();
-		currentPlayerText.GetComponent<Text>().color = _findCurrentPlayerColor();
+		currentPlayerText.GetComponent<Text>().color = findCurrentPlayerColor();
 	}
 
-	Color _findCurrentPlayerColor()
+	private Color findCurrentPlayerColor()
 	{
-//		TODO: replace standard colors with actual RGBA colors
-//		Color playerOneMeshColor = new Color(166, 34, 180, 255);
-//		Color playerTwoMeshColor = new Color(15, 39, 191, 255);
-
 		return (currentPlayer == 0) ? Color.magenta : Color.blue;
 	}
 }
