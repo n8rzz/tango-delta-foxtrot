@@ -1,22 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class GameController : MonoBehaviour 
 {
-	public GameObject playerOne;
-	public GameObject playerTwo;
-	public GameObject turnController;
-	public GameObject gameBoardManager;
-	public GameObject masterGameTimeText;
-	public GameObject elapsedTurnTimeText;
-	public GameObject winnerBannerText;
-
-	// private FormationCollection FormationCollection = new FormationCollection();
 	private int activePlayer;
+	private Vector3 activeGamePost;
 	private float currentGameTime;
 	private float elapsedTurnTime;
-	private float elapsedTurnTimeLimit = 60.0f; // number of seconds
+	private float elapsedTurnTimeLimit = 60.0f;
 	private bool didStart = false;
 	private bool isComplete = false;
 	private enum GamePhase {
@@ -24,9 +15,13 @@ public class GameController : MonoBehaviour
 		middle = 32,
 		end
 	};
-		
-	private Vector3 activeGamePost;
-	private int[] moveToMake = new int[3];
+
+	public GameObject playerOne;
+	public GameObject playerTwo;
+	public GameObject turnController;
+	public GameObject masterGameTimeText;
+	public GameObject elapsedTurnTimeText;
+	public GameObject winnerBannerText;
 
 
 	void Start () 
@@ -35,11 +30,9 @@ public class GameController : MonoBehaviour
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
 		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
-		gameBoardManager = GameObject.FindGameObjectWithTag("gameBoardManager").gameObject;
-
-        didStart = true;
-		currentGameTime = 0f;
 		winnerBannerText.GetComponent<Text>().text = "";
+		currentGameTime = 0f;
+		didStart = true;
 
 		resetTurnTime();
 	}
@@ -61,7 +54,7 @@ public class GameController : MonoBehaviour
 	
 	
 	//////////////////////////////////////////////////////////////////
-	/// GameState Methods
+	/// 
 	//////////////////////////////////////////////////////////////////
 
 	// entry into this method comes from InteractWithGameBoardPost.OnMouseDown
@@ -72,14 +65,17 @@ public class GameController : MonoBehaviour
 			return;
 		}
 			
+		// FIXME: reduce scope/remove activeGamePost. this could be passed as a param rather than a class level property.
 		activeGamePost = postPosition;
-		moveToMake = extractBoardPositionFromPostName(postName);
+
+		int[] moveToMake = extractBoardPositionFromPostName(postName);
 		FormationPointModel playerMove = new FormationPointModel(moveToMake[0], moveToMake[1], moveToMake[2]);
 
 		executePlayerMove(postName, playerMove);
-		// initiate wait time for undo
-		// StartCoroutine(makeUndoMoveAvailable());
-		// disable click until timer is up
+		// TODO: undo last move goes here 
+		// 		initiate wait time for undo
+		// 		StartCoroutine(makeUndoMoveAvailable());
+		// 		disable click until timer is up
 		didExecutePlayerMove(playerMove);
 	}
 
