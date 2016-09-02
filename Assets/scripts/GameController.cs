@@ -69,8 +69,8 @@ public class GameController : MonoBehaviour
 		activeGamePost = postPosition;
 
 		int[] moveToMake = extractBoardPositionFromPostName(postName);
-		FormationPointModel playerMove = new FormationPointModel(moveToMake[0], moveToMake[1], moveToMake[2]);
-		PlayerMoveModel nextMove = new PlayerMoveModel(activePlayer, postName);
+		PointModel playerMove = new PointModel(moveToMake[0], moveToMake[1], moveToMake[2]);
+		// PlayerMoveModel playerMove = new PlayerMoveModel(activePlayer, postName);
 
 		executePlayerMove(postName, playerMove);
 		// TODO: undo last move goes here 
@@ -81,14 +81,14 @@ public class GameController : MonoBehaviour
 	}
 
 	// place the player piece in the view on the selected post
-	private void executePlayerMove(string name, FormationPointModel playerMove)
+	private void executePlayerMove(string name, PointModel playerMove)
 	{
 		GameBoardController.addPlayerAtPoint(activePlayer, playerMove);
 		placePlayerPieceOnPost(name);
 	}
 		
 	// we made the move, do stuff that needs to be done after the move is confirmed 
-	private void didExecutePlayerMove(FormationPointModel playerMove)
+	private void didExecutePlayerMove(PointModel playerMove)
 	{
 		// FIXME: remove once GameHistory is implemented
 		// int currentMovesCount = gameBoardMangerScript.MoveCount;

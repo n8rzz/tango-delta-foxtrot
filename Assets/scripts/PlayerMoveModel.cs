@@ -3,12 +3,12 @@
 public class PlayerMoveModel
 {
 	public int playerNumber;
-	public FormationPointModel movePosition;
+	public PointModel movePosition;
 
 	public PlayerMoveModel(int playerNumber, string gameBoardPosition)
 	{
 		this.playerNumber = playerNumber;
-		this.movePosition = new FormationPointModel(
+		this.movePosition = new PointModel(
 			extractBoardPositionFromPostName(gameBoardPosition)
 		);
 	}

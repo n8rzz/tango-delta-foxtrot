@@ -3,20 +3,20 @@
 public class FormationModel
 {
 	public string formationType;
-	public List<FormationPointModel> points;
+	public List<PointModel> points;
 
 
-	public FormationModel(string type, List<FormationPointModel> pointsToAdd)
+	public FormationModel(string type, List<PointModel> pointsToAdd)
 	{
 		this.formationType = type;
-		this.points = new List<FormationPointModel>(pointsToAdd);
+		this.points = new List<PointModel>(pointsToAdd);
 	}
 
-	public bool isPointWithinFormation(FormationPointModel comparePoint)
+	public bool isPointWithinFormation(PointModel comparePoint)
 	{
 		for (var i = 0; i < this.points.Count; i++)
 		{
-			FormationPointModel point = this.points[i];
+			PointModel point = this.points[i];
 
 			if (FormationModelComparator.isEqual(point, comparePoint))
 			{

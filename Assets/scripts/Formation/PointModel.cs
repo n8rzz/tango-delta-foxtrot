@@ -1,17 +1,19 @@
-﻿public class FormationPointModel
+﻿// FIXME: Formation shouldnt be part of the name
+
+public class PointModel
 {
     public int level;
     public int row;
     public int column;
 
-    public FormationPointModel(int[] playerMove)
+    public PointModel(int[] playerMove)
     {
         this.level = playerMove[0];
         this.row = playerMove[1];
         this.column = playerMove[2];
     }
 
-    public FormationPointModel(int level, int row, int column)
+    public PointModel(int level, int row, int column)
     {
         this.level = level;
         this.row = row;

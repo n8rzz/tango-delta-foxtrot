@@ -32,10 +32,10 @@ public static class FormationModelBuilder
             case "NATURAL":
                 for (var level = 0; level < MAX_LENGTH; level++) {
                     for (var row = 0; row < MAX_LENGTH; row++) {
-                        List<FormationPointModel> singleRow = new List<FormationPointModel>();
+                        List<PointModel> singleRow = new List<PointModel>();
 
                         for (var cell = 0; cell < MAX_LENGTH; cell++) {
-                            FormationPointModel singleCellInRow = new FormationPointModel(level, row, cell);
+                            PointModel singleCellInRow = new PointModel(level, row, cell);
                             singleRow.Add(singleCellInRow);
                         }
 
@@ -47,10 +47,10 @@ public static class FormationModelBuilder
                 break;
             case "ASCENDING":
                 for (var row = 0; row < MAX_LENGTH; row++) {
-                    List<FormationPointModel> singleRow = new List<FormationPointModel>();
+                    List<PointModel> singleRow = new List<PointModel>();
 
                     for (var levelAndCell = 0; levelAndCell < MAX_LENGTH; levelAndCell++) {
-                        FormationPointModel singleCellInRow = new FormationPointModel(levelAndCell, row, levelAndCell);
+                        PointModel singleCellInRow = new PointModel(levelAndCell, row, levelAndCell);
                         singleRow.Add(singleCellInRow);
                     }
 
@@ -62,10 +62,10 @@ public static class FormationModelBuilder
             case "DESCENDING":
                 for (var row = 0; row < MAX_LENGTH; row++) {
                     var decrementor = 3;
-                    List<FormationPointModel> singleRow = new List<FormationPointModel>();
+                    List<PointModel> singleRow = new List<PointModel>();
 
                     for (var cell = 0; cell < MAX_LENGTH; cell++) {
-                        FormationPointModel singleCellInRow = new FormationPointModel(decrementor, row, cell);
+                        PointModel singleCellInRow = new PointModel(decrementor, row, cell);
 
                         singleRow.Add(singleCellInRow);
                         decrementor--;
@@ -92,10 +92,10 @@ public static class FormationModelBuilder
             case "NATURAL":
                 for (var level = 0; level < MAX_LENGTH; level++) {
                     for (var column = 0; column < MAX_LENGTH; column++) {
-                        List<FormationPointModel> singleColumn = new List<FormationPointModel>();
+                        List<PointModel> singleColumn = new List<PointModel>();
 
                         for (var row = 0; row < MAX_LENGTH; row++) {
-                            singleColumn.Add(new FormationPointModel(level, row, column));
+                            singleColumn.Add(new PointModel(level, row, column));
                         }
 
                         FormationModel formationModelForColumn = new FormationModel("COLUMN_NATURAL", singleColumn);
@@ -106,10 +106,10 @@ public static class FormationModelBuilder
                 break;
             case "ASCENDING":
                 for (var column = 0; column < MAX_LENGTH; column++) {
-                    List<FormationPointModel> singleColumn = new List<FormationPointModel>();
+                    List<PointModel> singleColumn = new List<PointModel>();
 
                     for (var levelAndRow = 0; levelAndRow < MAX_LENGTH; levelAndRow++) {
-                        singleColumn.Add(new FormationPointModel(levelAndRow, levelAndRow, column));
+                        singleColumn.Add(new PointModel(levelAndRow, levelAndRow, column));
                     }
 
                     FormationModel formationModelForColumn = new FormationModel("COLUMN_ASCENDING", singleColumn);
@@ -120,10 +120,10 @@ public static class FormationModelBuilder
             case "DESCENDING":
                 for (var column = 0; column < MAX_LENGTH; column++) {
                     var decrementor = 3;
-                    List<FormationPointModel> singleColumn = new List<FormationPointModel>();
+                    List<PointModel> singleColumn = new List<PointModel>();
 
                     for (var row = 0; row < MAX_LENGTH; row++) {
-                        singleColumn.Add(new FormationPointModel(decrementor, column, row));
+                        singleColumn.Add(new PointModel(decrementor, column, row));
                         decrementor--;
                     }
 
@@ -143,8 +143,8 @@ public static class FormationModelBuilder
     {
         int incrementor = 0;
         int decrementor = 3;
-        List<FormationPointModel> topDiagonal = new List<FormationPointModel>();
-        List<FormationPointModel> bottomDiagonal = new List<FormationPointModel>();
+        List<PointModel> topDiagonal = new List<PointModel>();
+        List<PointModel> bottomDiagonal = new List<PointModel>();
         List<FormationModel> diagonals = new List<FormationModel>();
 
         switch (variation) {
@@ -153,8 +153,8 @@ public static class FormationModelBuilder
                     decrementor = 3;
 
                     for (var i = 0; i < MAX_LENGTH; i++) {
-                        topDiagonal.Add(new FormationPointModel(level, i, i));
-                        bottomDiagonal.Add(new FormationPointModel(level, decrementor, i));
+                        topDiagonal.Add(new PointModel(level, i, i));
+                        bottomDiagonal.Add(new PointModel(level, decrementor, i));
 
                         decrementor--;
                     }
@@ -168,8 +168,8 @@ public static class FormationModelBuilder
                 break;
             case "ASCENDING":
                 for (var i = 0; i < MAX_LENGTH; i++) {
-                    topDiagonal.Add(new FormationPointModel(i, i, i));
-                    bottomDiagonal.Add(new FormationPointModel(i, decrementor, i));
+                    topDiagonal.Add(new PointModel(i, i, i));
+                    bottomDiagonal.Add(new PointModel(i, decrementor, i));
 
                     decrementor--;
                 }
@@ -182,8 +182,8 @@ public static class FormationModelBuilder
                 break;
             case "DESCENDING":
                 for (var i = 3; i >= 0; i--) {
-                    topDiagonal.Add(new FormationPointModel(i, incrementor, incrementor));
-                    bottomDiagonal.Add(new FormationPointModel(i, i, incrementor));
+                    topDiagonal.Add(new PointModel(i, incrementor, incrementor));
+                    bottomDiagonal.Add(new PointModel(i, i, incrementor));
 
                     incrementor++;
                 }
@@ -207,10 +207,10 @@ public static class FormationModelBuilder
 
         for (var row = 0; row < MAX_LENGTH; row++) {
             for (var cell = 0; cell < MAX_LENGTH; cell++) {
-                List<FormationPointModel> singleStack = new List<FormationPointModel>();
+                List<PointModel> singleStack = new List<PointModel>();
 
                 for (var level = 0; level < MAX_LENGTH; level++) {
-                    FormationPointModel stack = new FormationPointModel(level, row, cell);
+                    PointModel stack = new PointModel(level, row, cell);
                     singleStack.Add(stack);
                 }
 

@@ -25,7 +25,7 @@ public class FormationCollection
         this.formations.Add(formationToAdd);
     }
 
-    public List<FormationModel> filterFormationsForPoint(FormationPointModel point)
+    public List<FormationModel> filterFormationsForPoint(PointModel point)
     {
         List<FormationModel> filteredFormations = new List<FormationModel>();
 
