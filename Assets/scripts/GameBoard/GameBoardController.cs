@@ -83,18 +83,18 @@ public static class GameBoardController
         return playerAtPoint;
     }
 
-    public static void addToHistory(int player, string point, PlayerMoveModel moveToMake)
-    {
-        // FIXME: moveToAdd should be a passed param of type PlayerMoveModel
-        PlayerMoveModel moveToAdd = new PlayerMoveModel(player, point);
-        // FIXME: Passing moveToMake causes a failure to find System.Collections.Generic
-        GameBoardHistory.addMoveToHistory(moveToAdd);
-    }
+    // public static void addToHistory(int player, string point)
+    // {
+    //     // FIXME: moveToAdd should be a passed param of type PlayerMoveModel
+    //     PlayerMoveModel moveToAdd = new PlayerMoveModel(player, point);
+    //     // FIXME: Passing moveToMake causes a failure to find System.Collections.Generic
+    //     GameBoardHistory.addMoveToHistory(moveToAdd);
+    // }
 
     public static FormationModel findWinningFormation(PlayerMoveModel moveToMake)
     {
-        if (GameBoardHistory.isWinPossible())
-        {
+        // if (GameBoardHistory.isWinPossible())
+        // {
             List<FormationModel> formations = FormationCollection.filterFormationsForPoint(moveToMake.point);
 
             for (var i = 0; i < formations.Count; i++)
@@ -106,7 +106,7 @@ public static class GameBoardController
                     return formation;
                 }
             }
-        }
+        // }
 
         return null;
     }

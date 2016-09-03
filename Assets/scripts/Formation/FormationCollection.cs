@@ -4,6 +4,9 @@ public class FormationCollection
 {
     public List<FormationModel> formations = new List<FormationModel>();
 
+// 	// This will filter out the list of ints that are > than 7, Where returns an
+// 	// IEnumerable<T> so a call to ToList is required to convert back to a List<T>.
+// 	// List<int> filteredList = myList.Where( x => x > 7).ToList();
 
     public FormationCollection()
     {

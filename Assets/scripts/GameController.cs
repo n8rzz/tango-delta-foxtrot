@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
 
 public class GameController : MonoBehaviour 
 {
@@ -87,7 +89,7 @@ public class GameController : MonoBehaviour
 	// we made the move, do stuff that needs to be done after the move is confirmed 
 	private void didExecutePlayerMove(string postName, PlayerMoveModel playerMove)
 	{
-		GameBoardController.addToHistory(activePlayer, postName, playerMove);
+		GameBoardHistory.addMoveToHistory(playerMove);
 		
 		// FIXME: Move to GameBoardController.isWinningMove
 		FormationModel winningFormation = GameBoardController.findWinningFormation(playerMove);
