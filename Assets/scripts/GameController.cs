@@ -45,11 +45,13 @@ public class GameController : MonoBehaviour
 
 	void FixedUpdate() 
 	{
-		string masterGameTimeString = transformTime(currentGameTime);
-		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
+		if (!isComplete) {
+			string masterGameTimeString = transformTime(currentGameTime);
+			masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
 
-		string elapsedTurnTimeString = transformTime(elapsedTurnTime);
-		elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
+			string elapsedTurnTimeString = transformTime(elapsedTurnTime);
+			elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
+		}
 	}
 	
 	

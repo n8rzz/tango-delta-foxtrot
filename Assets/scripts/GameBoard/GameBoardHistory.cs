@@ -2,6 +2,7 @@
 
 public static class GameBoardHistory
 {
+	private static int MIN_MOVES_COUNT = 6;
 	public static List<PlayerMoveModel> history = new List<PlayerMoveModel>();
 
 
@@ -12,7 +13,7 @@ public static class GameBoardHistory
 
 	public static bool isWinPossible()
 	{
-		return calculateMovesCount() > 7;
+		return calculateMovesCount() > MIN_MOVES_COUNT;
 	}
 
 	public static int calculateMovesCount()
