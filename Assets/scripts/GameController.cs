@@ -4,7 +4,6 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour 
 {
 	private int activePlayer;
-	private Vector3 activeGamePost;
 	private float currentGameTime;
 	private float elapsedTurnTime;
 	private float elapsedTurnTimeLimit = 60.0f;
@@ -45,18 +44,19 @@ public class GameController : MonoBehaviour
 
 	void FixedUpdate() 
 	{
-		if (!isComplete) {
-			string masterGameTimeString = transformTime(currentGameTime);
-			masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
-
-			string elapsedTurnTimeString = transformTime(elapsedTurnTime);
-			elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
+		if (isComplete) {
+			return;
 		}
+
+		string masterGameTimeString = transformTime(currentGameTime);
+		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
+
+		string elapsedTurnTimeString = transformTime(elapsedTurnTime);
+		elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
 	}
 	
 	
 	//////////////////////////////////////////////////////////////////
-	/// 
 	//////////////////////////////////////////////////////////////////
 
 	// entry into this method comes from InteractWithGameBoardPost.OnMouseDown
@@ -66,15 +66,10 @@ public class GameController : MonoBehaviour
 		{
 			return;
 		}
-			
-		// FIXME: reduce scope/remove activeGamePost. this could be passed as a param rather than a class level property.
-		activeGamePost = postPosition;
 
-		int[] moveToMake = extractBoardPositionFromPostName(postName);
-		PointModel playerMove = new PointModel(moveToMake[0], moveToMake[1], moveToMake[2]);
-		// PlayerMoveModel playerMove = new PlayerMoveModel(activePlayer, postName);
+		PlayerMoveModel playerMove = new PlayerMoveModel(activePlayer, postName);
 
-		executePlayerMove(postName, playerMove);
+		executePlayerMove(playerMove, postPosition, postName);
 		// TODO: undo last move goes here 
 		// 		initiate wait time for undo
 		// 		StartCoroutine(makeUndoMoveAvailable());
@@ -83,24 +78,24 @@ public class GameController : MonoBehaviour
 	}
 
 	// place the player piece in the view on the selected post
-	private void executePlayerMove(string postName, PointModel playerMove)
+	private void executePlayerMove(PlayerMoveModel playerMove, Vector3 postPosition, string postName)
 	{
-		GameBoardController.addPlayerAtPoint(activePlayer, playerMove);
-		placePlayerPieceOnPost(postName);
+		GameBoardController.addPlayerAtPoint(playerMove);
+		placePlayerPieceOnPost(postPosition, postName);
 	}
 		
 	// we made the move, do stuff that needs to be done after the move is confirmed 
-	private void didExecutePlayerMove(string postName, PointModel playerMove)
+	private void didExecutePlayerMove(string postName, PlayerMoveModel playerMove)
 	{
-		GameBoardController.addToHistory(activePlayer, postName);
+		GameBoardController.addToHistory(activePlayer, postName, playerMove);
 		
 		// FIXME: Move to GameBoardController.isWinningMove
-		FormationModel winningFormation = GameBoardController.findWinningFormation(activePlayer, playerMove);
+		FormationModel winningFormation = GameBoardController.findWinningFormation(playerMove);
 		
 		if (winningFormation != null)
 		{
 			// do end game things
-
+			Debug.Log("WIN " + winningFormation.type);
 			isComplete = true;
 			// stop timers
 			// show winning formation
@@ -123,7 +118,7 @@ public class GameController : MonoBehaviour
 	/// Adds name to new game object
 	/// Adds tag to new game object
 	/// Makes new game object a child of the playerMovesContainer
-	private void placePlayerPieceOnPost(string postname)
+	private void placePlayerPieceOnPost(Vector3 activeGamePost, string postname)
 	{
 		if (activePlayer == 0) 
 		{

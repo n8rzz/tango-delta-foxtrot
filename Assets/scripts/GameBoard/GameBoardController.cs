@@ -40,13 +40,17 @@ public static class GameBoardController
     }
 
 
-    public static bool addPlayerAtPoint(int player, PointModel point)
+    public static bool addPlayerAtPoint(PlayerMoveModel moveToMake)
     {
-        if (!isValidMove(point)) {
+        if (!isValidMove(moveToMake.point)) {
             return false;
         }
 
-        gameBoard[point.level][point.row][point.column] = player;
+        int level = moveToMake.point.level;
+        int row = moveToMake.point.row;
+        int column = moveToMake.point.column;
+
+        gameBoard[level][row][column] = moveToMake.player;
 
         return true;
     }
@@ -79,24 +83,25 @@ public static class GameBoardController
         return playerAtPoint;
     }
 
-    public static void addToHistory(int player, string point)
+    public static void addToHistory(int player, string point, PlayerMoveModel moveToMake)
     {
         // FIXME: moveToAdd should be a passed param of type PlayerMoveModel
         PlayerMoveModel moveToAdd = new PlayerMoveModel(player, point);
+        // FIXME: Passing moveToMake causes a failure to find System.Collections.Generic
         GameBoardHistory.addMoveToHistory(moveToAdd);
     }
 
-    public static FormationModel findWinningFormation(int player, PointModel point)
+    public static FormationModel findWinningFormation(PlayerMoveModel moveToMake)
     {
         if (GameBoardHistory.isWinPossible())
         {
-            List<FormationModel> formations = FormationCollection.filterFormationsForPoint(point);
+            List<FormationModel> formations = FormationCollection.filterFormationsForPoint(moveToMake.point);
 
             for (var i = 0; i < formations.Count; i++)
             {
                 FormationModel formation = formations[i];
 
-                if (isWinningFormation(player, formations[i].points))
+                if (isWinningFormation(moveToMake.player, formations[i].points))
                 {
                     return formation;
                 }

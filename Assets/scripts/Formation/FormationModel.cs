@@ -2,13 +2,13 @@
 
 public class FormationModel
 {
-	public string formationType;
+	public string type;
 	public List<PointModel> points;
 
 
 	public FormationModel(string type, List<PointModel> pointsToAdd)
 	{
-		this.formationType = type;
+		this.type = type;
 		this.points = new List<PointModel>(pointsToAdd);
 	}
 

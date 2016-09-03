@@ -1,16 +1,22 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerMoveModel
-{
-	public int playerNumber;
-	public PointModel movePosition;
+{ 
+	public int player;
+	public PointModel point;
 
-	public PlayerMoveModel(int playerNumber, string gameBoardPosition)
+	public PlayerMoveModel(int player, string gameBoardPosition)
 	{
-		this.playerNumber = playerNumber;
-		this.movePosition = new PointModel(
-			extractBoardPositionFromPostName(gameBoardPosition)
-		);
+		this.player = player;
+		
+		addPoint(gameBoardPosition);
+	}
+
+	private void addPoint(string gameBoardPosition)
+	{
+		 PointModel pointToAdd = new PointModel(extractBoardPositionFromPostName(gameBoardPosition));
+		 this.point = pointToAdd;
 	}
 
 	private int[] extractBoardPositionFromPostName(string postname)

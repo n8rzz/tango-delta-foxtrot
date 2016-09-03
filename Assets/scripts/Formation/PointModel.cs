@@ -1,4 +1,6 @@
-﻿public class PointModel
+﻿using System.Collections.Generic;
+
+public class PointModel
 {
     public int level;
     public int row;
