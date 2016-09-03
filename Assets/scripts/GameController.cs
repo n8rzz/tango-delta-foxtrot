@@ -1,124 +1,114 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameController : MonoBehaviour 
 {
-	public GameObject playerOne;
-	public GameObject playerTwo;
-	public GameObject turnController;	
-
-	public GameObject masterGameTimeText;
-//	public Text elapsedTurnTimeText;
-
 	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
+	private float elapsedTurnTimeLimit = 60.0f;
 	private bool didStart = false;
 	private bool isComplete = false;
+	private enum GamePhase {
+		beginning = 16,
+		middle = 32,
+		end
+	};
 
-	private string postname;
-	private Vector3 activeGamePost;
-	private ArrayList gameHistory = new ArrayList();
-	private int[] lastMove = new int[3];
-//	private int[, ,] gameBoard = new int[,,] {
-//		{
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1}
-//		}, {
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1}
-//		}, {
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1}
-//		}, {
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1},
-//			{-1, -1, -1, -1}
-//		}
-//	};
+	public GameObject playerOne;
+	public GameObject playerTwo;
+	public GameObject turnController;
+	public GameObject masterGameTimeText;
+	public GameObject elapsedTurnTimeText;
+	public GameObject winnerBannerText;
 
-	void Awake()
+
+	void Start () 
 	{
-		Debug.Log("gameController " + GetInstanceID());
-	}
-
-	void Start () {
         masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
+		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
+		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
-        didStart = true;
+		winnerBannerText.GetComponent<Text>().text = "";
 		currentGameTime = 0f;
-        //		elapsedTurnTime = 0f;  
+		didStart = true;
+
+		resetTurnTime();
 	}
 
 	void Update() 
 	{
 		currentGameTime += Time.deltaTime;
-//		elapsedTurnTime += Time.deltaTime;
+		elapsedTurnTime -= Time.deltaTime;
 	}
 
 	void FixedUpdate() 
 	{
-		string masterGameTimeString = transformTime(currentGameTime);
-//		string masterTurnTimeString = transformTime(elapsedTurnTime);
+		if (isComplete) {
+			return;
+		}
 
+		string masterGameTimeString = transformTime(currentGameTime);
 		masterGameTimeText.GetComponent<Text>().text = "Game Time: " + masterGameTimeString;
-//		elapsedTurnTimeText.text = "Turn Time: " + masterTurnTimeString;
+
+		string elapsedTurnTimeString = transformTime(elapsedTurnTime);
+		elapsedTurnTimeText.GetComponent<Text>().text = "Turn Time: " + elapsedTurnTimeString;
 	}
 	
 	
 	//////////////////////////////////////////////////////////////////
-	/// GameState Methods
 	//////////////////////////////////////////////////////////////////
 
-	// we are about to place the piece, do stuff that needs to be done before hand here
-	public void WillMove(Vector3 postPosition, string name)
+	// entry into this method comes from InteractWithGameBoardPost.OnMouseDown
+	public void willExecutePlayerMove(Vector3 postPosition, string postName)
 	{
-		activeGamePost = postPosition;
-		// split at _ and add to new player piece
-		postname = name;
-		print (postname);
-		// disable click handlers on posts
-		// is game still true
-		// what player is making this move
-		// is this move possible
-		// calculate vertical offset
-		lastMove = extractBoardPositionFromPostName(name);
+		if (!didStart || isComplete)
+		{
+			return;
+		}
 
-		_makeMove();
-		_didMove();
+		PlayerMoveModel playerMove = new PlayerMoveModel(activePlayer, postName);
+
+		executePlayerMove(playerMove, postPosition, postName);
+		// TODO: undo last move goes here 
+		// 		initiate wait time for undo
+		// 		StartCoroutine(makeUndoMoveAvailable());
+		// 		disable click until timer is up
+		didExecutePlayerMove(postName, playerMove);
 	}
 
 	// place the player piece in the view on the selected post
-	void _makeMove()
+	private void executePlayerMove(PlayerMoveModel playerMove, Vector3 postPosition, string postName)
 	{
-
-		// append to parent
-		// add to gameBoard array
-
-		PlacePlayerPieceOnPost();
-	
-		// initiate wait time for undo
-
+		GameBoardController.addPlayerAtPoint(playerMove);
+		placePlayerPieceOnPost(postPosition, postName);
 	}
-
-	// we made the move, do stuff that needs to be done after the move is made here
-	void _didMove()
+		
+	// we made the move, do stuff that needs to be done after the move is confirmed 
+	private void didExecutePlayerMove(string postName, PlayerMoveModel playerMove)
 	{
+		GameBoardHistory.addMoveToHistory(playerMove);
+		
+		// FIXME: Move to GameBoardController.isWinningMove
+		FormationModel winningFormation = GameBoardController.findWinningFormation(playerMove);
+		
+		if (winningFormation != null)
+		{
+			// do end game things
+			Debug.Log("WIN " + winningFormation.type);
+			isComplete = true;
+			// stop timers
+			// show winning formation
+			buildWinnerText();
+			
+			return;
+		}
 
-		gameHistory.Add(lastMove);
-		// perform win checks
-		// update currentPlayer
 		changeActivePlayer();
-		restartTurnTimer();
-		// enable click handlers on posts
+		getCurrentGamePhase();
+		resetTurnTime();
 	}
 
 
@@ -130,7 +120,7 @@ public class GameController : MonoBehaviour
 	/// Adds name to new game object
 	/// Adds tag to new game object
 	/// Makes new game object a child of the playerMovesContainer
-	void PlacePlayerPieceOnPost()
+	private void placePlayerPieceOnPost(Vector3 activeGamePost, string postname)
 	{
 		if (activePlayer == 0) 
 		{
@@ -148,45 +138,62 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-	/// <summary>
-	/// Changes the active player.
-	/// </summary>
-	void changeActivePlayer()
+	private void changeActivePlayer()
 	{
         var turnScript = turnController.GetComponent<TurnController>();
         activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
-	
-	//////////////////////////////////////////////////////////////////
-	/// Utility Methods
-	//////////////////////////////////////////////////////////////////
+	private void getCurrentGamePhase()
+	{  
+		int currentMoveCount = GameBoardHistory.calculateMovesCount();
 
-	void restartTurnTimer()
-	{
-//		print ("restart turn timer " + elapsedTurnTime);
-//		elapsedTurnTime = 0f;
+		if (currentMoveCount == (int)GamePhase.beginning)
+		{
+			// todo: refactor this to be calculated at start() with an enum
+			elapsedTurnTimeLimit *= 1.5f;
+		}
+		else if (currentMoveCount == (int)GamePhase.middle)
+		{
+			// todo: shame!
+			// todo: refactor this to be calculated at start() with an enum
+			float originalTimeLimit = elapsedTurnTimeLimit / 1.5f; 
+			elapsedTurnTimeLimit = originalTimeLimit * 2;
+		}
 	}
 
+	private void resetTurnTime()
+	{
+		elapsedTurnTime = elapsedTurnTimeLimit;
+	}
 
-	int[] extractBoardPositionFromPostName(string postName)
+	private void buildWinnerText()
+	{
+		winnerBannerText.GetComponent<Text>().text = "Player " + (activePlayer + 1) + " is the winner!";
+	}
+	
+	//////////////////////////////////////////////////////////////////
+	/// Helper Methods
+	//////////////////////////////////////////////////////////////////
+	// Convert the string postname to an int[]. 
+	private int[] extractBoardPositionFromPostName(string postname)
 	{
 		// todo: optimize, possibly with below strategy
 		// string[] test = new string[] {"1", "2", "3", "4", "5"};
 		// int[] arr = Array.ConvertAll<string, int>(test, int.Parse);
 
 		int[] gameBoardPosition = new int[3];
-		string[] locations = postname.Split('-');
+		string[] positions = postname.Split('-');
 
-		for (int i = 0; i < locations.Length; i++)
+		for (int i = 0; i < positions.Length; i++)
 		{
-			gameBoardPosition[i] = System.Int32.Parse(locations[i]);
+			gameBoardPosition[i] = System.Int32.Parse(positions[i]);
 		}
 
 		return gameBoardPosition;
 	}
 
-	string transformTime(float time) 
+	private string transformTime(float time) 
 	{
 		int minutes = Mathf.FloorToInt(time / 60F);
 		int seconds = Mathf.FloorToInt(time - minutes * 60);
