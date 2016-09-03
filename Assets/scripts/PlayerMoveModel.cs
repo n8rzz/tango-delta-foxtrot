@@ -15,10 +15,6 @@ public class PlayerMoveModel
 
 	private int[] extractBoardPositionFromPostName(string postname)
 	{
-		// todo: optimize, possibly with below strategy
-		// string[] test = new string[] {"1", "2", "3", "4", "5"};
-		// int[] arr = Array.ConvertAll<string, int>(test, int.Parse);
-
 		int[] gameBoardPosition = new int[3];
 		string[] positions = postname.Split('-');
 

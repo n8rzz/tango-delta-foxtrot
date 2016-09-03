@@ -77,22 +77,21 @@ public class GameController : MonoBehaviour
 		// 		initiate wait time for undo
 		// 		StartCoroutine(makeUndoMoveAvailable());
 		// 		disable click until timer is up
-		didExecutePlayerMove(playerMove);
+		didExecutePlayerMove(postName, playerMove);
 	}
 
 	// place the player piece in the view on the selected post
-	private void executePlayerMove(string name, PointModel playerMove)
+	private void executePlayerMove(string postName, PointModel playerMove)
 	{
 		GameBoardController.addPlayerAtPoint(activePlayer, playerMove);
-		placePlayerPieceOnPost(name);
+		placePlayerPieceOnPost(postName);
 	}
 		
 	// we made the move, do stuff that needs to be done after the move is confirmed 
-	private void didExecutePlayerMove(PointModel playerMove)
+	private void didExecutePlayerMove(string postName, PointModel playerMove)
 	{
-		// FIXME: remove once GameHistory is implemented
-		// int currentMovesCount = gameBoardMangerScript.MoveCount;
-
+		GameBoardController.addToHistory(activePlayer, postName);
+		
 		// FIXME: Move to GameBoardController.isWinningMove
 		FormationModel winningFormation = GameBoardController.findWinningFormation(activePlayer, playerMove);
 		
@@ -109,7 +108,7 @@ public class GameController : MonoBehaviour
 		}
 
 		changeActivePlayer();
-		// getCurrentGamePhase(currentMovesCount);
+		getCurrentGamePhase();
 		resetTurnTime();
 	}
 
@@ -146,8 +145,10 @@ public class GameController : MonoBehaviour
         activePlayer = turnScript.changeCurrentPlayer();
 	}	
 
-	private void getCurrentGamePhase(int currentMoveCount)
+	private void getCurrentGamePhase()
 	{  
+		int currentMoveCount = GameBoardHistory.calculateMovesCount();
+
 		if (currentMoveCount == (int)GamePhase.beginning)
 		{
 			// todo: refactor this to be calculated at start() with an enum

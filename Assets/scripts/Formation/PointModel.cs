@@ -1,6 +1,4 @@
-﻿// FIXME: Formation shouldnt be part of the name
-
-public class PointModel
+﻿public class PointModel
 {
     public int level;
     public int row;

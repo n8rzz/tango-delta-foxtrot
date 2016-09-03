@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 public static class GameBoardController
 {
@@ -78,15 +79,17 @@ public static class GameBoardController
         return playerAtPoint;
     }
 
-    // public static void addToHistory(int player, PointModel point)
-    // {
-    //     this.gameHistory.addPlayerMoveToHistory(player, point);
-    // }
+    public static void addToHistory(int player, string point)
+    {
+        // FIXME: moveToAdd should be a passed param of type PlayerMoveModel
+        PlayerMoveModel moveToAdd = new PlayerMoveModel(player, point);
+        GameBoardHistory.addMoveToHistory(moveToAdd);
+    }
 
     public static FormationModel findWinningFormation(int player, PointModel point)
     {
-        // if (gameHistory.Count > 7)
-        // {
+        if (GameBoardHistory.isWinPossible())
+        {
             List<FormationModel> formations = FormationCollection.filterFormationsForPoint(point);
 
             for (var i = 0; i < formations.Count; i++)
@@ -98,7 +101,7 @@ public static class GameBoardController
                     return formation;
                 }
             }
-        // }
+        }
 
         return null;
     }
