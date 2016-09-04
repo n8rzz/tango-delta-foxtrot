@@ -4,7 +4,6 @@
 	// 	one = 0,
 	// 	two = 1
 	// }
-	
 	private static int playerOne = 0;
 	private static int playerTwo = 1;
 

@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour
 
 	public GameObject playerOne;
 	public GameObject playerTwo;
-	public GameObject turnController;
+	public GameObject playerTurnView;
 	public GameObject masterGameTimeText;
 	public GameObject elapsedTurnTimeText;
 	public GameObject winnerBannerText;
@@ -31,7 +31,7 @@ public class GameController : MonoBehaviour
         masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
 		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
-        turnController = GameObject.FindGameObjectWithTag("turnController").gameObject;
+        playerTurnView = GameObject.FindGameObjectWithTag("playerTurnView").gameObject;
 		winnerBannerText.GetComponent<Text>().text = "";
 		currentGameTime = 0f;
 		didStart = true;
@@ -141,9 +141,10 @@ public class GameController : MonoBehaviour
 	// change the current player
 	private void changeActivePlayer()
 	{
-		var playerTurnView = turnController.GetComponent<TurnController>();
-        int currentPlayer = PlayerTurnController.changeActivePlayer();
-		playerTurnView.changeActivePlayerText(currentPlayer);
+		int currentPlayer = PlayerTurnController.changeActivePlayer();
+
+		var playerTurnViewScript = playerTurnView.GetComponent<TurnController>();
+		playerTurnViewScript.changeActivePlayerText(currentPlayer);
 	}	
 
 	// reset the turn time

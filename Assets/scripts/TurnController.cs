@@ -5,7 +5,7 @@ public class TurnController : MonoBehaviour
 {	
 	public GameObject currentPlayerText;
 
-	private int currentPlayer;
+	// private int currentPlayer;
 
 
 	// Unity lifecycle method
@@ -30,10 +30,10 @@ public class TurnController : MonoBehaviour
 	private void setCurrentPlayerText(int currentPlayer)
 	{
 		currentPlayerText.GetComponent<Text>().text = "Current Player: " + (currentPlayer + 1).ToString();
-		currentPlayerText.GetComponent<Text>().color = findCurrentPlayerColor();
+		currentPlayerText.GetComponent<Text>().color = findCurrentPlayerColor(currentPlayer);
 	}
 
-	private Color findCurrentPlayerColor()
+	private Color findCurrentPlayerColor(int currentPlayer)
 	{
 		return (currentPlayer == 0) ? Color.magenta : Color.blue;
 	}
