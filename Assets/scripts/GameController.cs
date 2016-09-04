@@ -143,7 +143,7 @@ public class GameController : MonoBehaviour
 	{
 		int currentPlayer = PlayerTurnController.changeActivePlayer();
 
-		var playerTurnViewScript = playerTurnView.GetComponent<TurnController>();
+		var playerTurnViewScript = playerTurnView.GetComponent<PlayerTurnView>();
 		playerTurnViewScript.changeActivePlayerText(currentPlayer);
 	}	
 

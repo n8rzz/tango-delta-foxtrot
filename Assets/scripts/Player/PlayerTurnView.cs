@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class TurnController : MonoBehaviour 
+// Responsible only for displaying the player who is currently making a move
+// PlayerTurnController is responsible for keeping track of which player that is 
+public class PlayerTurnView : MonoBehaviour 
 {	
 	public GameObject currentPlayerText;
-
-	// private int currentPlayer;
 
 
 	// Unity lifecycle method
@@ -30,10 +30,10 @@ public class TurnController : MonoBehaviour
 	private void setCurrentPlayerText(int currentPlayer)
 	{
 		currentPlayerText.GetComponent<Text>().text = "Current Player: " + (currentPlayer + 1).ToString();
-		currentPlayerText.GetComponent<Text>().color = findCurrentPlayerColor(currentPlayer);
+		currentPlayerText.GetComponent<Text>().color = calculateCurrentPlayerColor(currentPlayer);
 	}
 
-	private Color findCurrentPlayerColor(int currentPlayer)
+	private Color calculateCurrentPlayerColor(int currentPlayer)
 	{
 		return (currentPlayer == 0) ? Color.magenta : Color.blue;
 	}
