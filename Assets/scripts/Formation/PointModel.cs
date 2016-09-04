@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-public class PointModel
+﻿public class PointModel
 {
     private static int ID = 0;
     public int id;
