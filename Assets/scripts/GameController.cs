@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameController : MonoBehaviour 
 {
@@ -77,10 +78,6 @@ public class GameController : MonoBehaviour
 		PlayerMoveModel playerMove = new PlayerMoveModel(postName);
 
 		executePlayerMove(playerMove, postPosition, postName);
-		// TODO: undo last move should go here 
-		// 		initiate wait time for undo
-		// 		StartCoroutine(makeUndoMoveAvailable());
-		// 		disable click until timer is up
 		didExecutePlayerMove(postName, playerMove);
 	}
 
@@ -111,6 +108,13 @@ public class GameController : MonoBehaviour
 			return;
 		}
 
+		// TODO: undo last move should go here 
+		// 		initiate wait time for undo
+		// 		StartCoroutine(makeUndoMoveAvailable());
+		// 		disable click until timer is up
+		StartCoroutine(enableUndoLastMove(playerMove));
+		Debug.Log("were back");
+
 		changeActivePlayer();
 		calculateGamePhase();
 		resetTurnTime();
@@ -136,6 +140,25 @@ public class GameController : MonoBehaviour
 			newmove.tag = "playerOneMoves";
 			newmove.transform.parent = GameObject.FindGameObjectWithTag("playerMovesContainer").transform;
 		}
+	}
+
+	private IEnumerator enableUndoLastMove(PlayerMoveModel plaerMove)
+	{
+		// CanvasGroup cg = MyRectTransform.GetComponent<CanvasGroup>();
+		// cg.interactable= false;
+		// cg.alpha = 0;​
+
+		Debug.Log("before yield");
+		print (Time.time);
+		// show undo button
+		// bool willUndoLastMove = wait for click;
+		// if willUndoLastMove ? undoLastMove(playerMove) : null
+
+		yield return new WaitForSecondsRealtime(5);
+
+		// hide undo button
+		print (Time.time);
+		Debug.Log("POST 5 SECONDS");
 	}
 
 	// change the current player
