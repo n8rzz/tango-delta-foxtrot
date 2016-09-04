@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 public static class GameBoardController
 {
@@ -80,30 +81,18 @@ public static class GameBoardController
         return playerAtPoint;
     }
 
-    // public static void addToHistory(int player, string point)
-    // {
-    //     // FIXME: moveToAdd should be a passed param of type PlayerMoveModel
-    //     PlayerMoveModel moveToAdd = new PlayerMoveModel(player, point);
-    //     // FIXME: Passing moveToMake causes a failure to find System.Collections.Generic
-    //     GameBoardHistory.addMoveToHistory(moveToAdd);
-    // }
-
     public static FormationModel findWinningFormation(PlayerMoveModel moveToMake)
     {
-        // if (GameBoardHistory.isWinPossible())
-        // {
+        if (GameBoardHistory.isWinPossible())
+        {
             List<FormationModel> formations = FormationCollection.filterFormationsForPoint(moveToMake.point);
+            List<FormationModel> formation = formations.Where(f => isWinningFormation(moveToMake.player, f.points)).ToList();
 
-            for (var i = 0; i < formations.Count; i++)
+            if (formation.Count != 0)
             {
-                FormationModel formation = formations[i];
-
-                if (isWinningFormation(moveToMake.player, formations[i].points))
-                {
-                    return formation;
-                }
+                return formation[0];
             }
-        // }
+        }
 
         return null;
     }

@@ -15,7 +15,8 @@
 		activePlayer = 0;
 	}
 
-	// change the activePlayer. called after a move was successfully placed and a player's turn has finished.
+	// change the activePlayer. 
+	// called after a move was successfully placed and a player's turn has finished.
 	public static int changeActivePlayer()
 	{
 		activePlayer = (activePlayer == playerOne) ? playerTwo : playerOne;
