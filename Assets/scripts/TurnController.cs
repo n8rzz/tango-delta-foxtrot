@@ -8,36 +8,26 @@ public class TurnController : MonoBehaviour
 	private int currentPlayer;
 
 
+	// Unity lifecycle method
 	void Awake()
 	{
         currentPlayerText = GameObject.FindGameObjectWithTag("currentTurn").gameObject;
 	}
 
+	// Unity lifecycle method
 	void Start()
 	{
-		currentPlayer = 0;
-
-		setCurrentPlayerText();
+		int currentPlayer = PlayerTurnController.activePlayer;
+		setCurrentPlayerText(currentPlayer);
 	}
 	
 
-	public int getCurrentPlayer()
+	public void changeActivePlayerText(int currentPlayer)
 	{
-		return currentPlayer;
+		setCurrentPlayerText(currentPlayer);
 	}
 
-	
-	public int changeCurrentPlayer()
-	{
-		currentPlayer = (currentPlayer == 0) ? 1 : 0;
-
-		setCurrentPlayerText();
-
-		return currentPlayer;
-	}
-	
-
-	private void setCurrentPlayerText()
+	private void setCurrentPlayerText(int currentPlayer)
 	{
 		currentPlayerText.GetComponent<Text>().text = "Current Player: " + (currentPlayer + 1).ToString();
 		currentPlayerText.GetComponent<Text>().color = findCurrentPlayerColor();

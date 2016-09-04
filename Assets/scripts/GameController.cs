@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour 
 {
-	private int activePlayer;
 	private float currentGameTime;
 	private float elapsedTurnTime;
 	private float elapsedTurnTimeLimit = 60.0f;
@@ -26,6 +25,9 @@ public class GameController : MonoBehaviour
 	// Unity lifecycle method
 	void Start () 
 	{
+		// reset the PlayerTurnController, this is only helpful when a game gets reset or restarted
+		PlayerTurnController.init();
+
         masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
 		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
@@ -71,7 +73,8 @@ public class GameController : MonoBehaviour
 			return;
 		}
 
-		PlayerMoveModel playerMove = new PlayerMoveModel(activePlayer, postName);
+		// int currentPlayer = PlayerTurnController.activePlayer;
+		PlayerMoveModel playerMove = new PlayerMoveModel(postName);
 
 		executePlayerMove(playerMove, postPosition, postName);
 		// TODO: undo last move should go here 
@@ -88,7 +91,7 @@ public class GameController : MonoBehaviour
 	private void executePlayerMove(PlayerMoveModel playerMove, Vector3 postPosition, string postName)
 	{
 		GameBoardController.addPlayerAtPoint(playerMove);
-		placePlayerPieceOnPost(postPosition, postName);
+		placePlayerPieceOnPost(postPosition, postName, playerMove.player);
 	}
 		
 	// perform system cleanups and updates after a move has been made successfully
@@ -117,9 +120,9 @@ public class GameController : MonoBehaviour
 	/// Adds name to new game object
 	/// Adds tag to new game object
 	/// Makes new game object a child of the playerMovesContainer
-	private void placePlayerPieceOnPost(Vector3 activeGamePost, string postname)
+	private void placePlayerPieceOnPost(Vector3 activeGamePost, string postname, int currentPlayer)
 	{
-		if (activePlayer == 0) 
+		if (currentPlayer == 0) 
 		{
 			GameObject newmove = Instantiate(playerOne, activeGamePost, Quaternion.identity) as GameObject;
 			newmove.transform.name = "playerone_" + postname;
@@ -138,8 +141,9 @@ public class GameController : MonoBehaviour
 	// change the current player
 	private void changeActivePlayer()
 	{
-        var turnScript = turnController.GetComponent<TurnController>();
-        activePlayer = turnScript.changeCurrentPlayer();
+		var playerTurnView = turnController.GetComponent<TurnController>();
+        int currentPlayer = PlayerTurnController.changeActivePlayer();
+		playerTurnView.changeActivePlayerText(currentPlayer);
 	}	
 
 	// reset the turn time
@@ -172,7 +176,8 @@ public class GameController : MonoBehaviour
 	// build a string, to be displayed in the UI, consisting of the player numbber and the fact that they are a winner.
 	private void buildWinnerText()
 	{
-		winnerBannerText.GetComponent<Text>().text = "Player " + (activePlayer + 1) + " is the winner!";
+		int currentPlayer = PlayerTurnController.activePlayer;
+		winnerBannerText.GetComponent<Text>().text = "Player " + (currentPlayer + 1) + " is the winner!";
 	}
 
 	// format float into a human readable mm:ss time

@@ -8,18 +8,18 @@
 	private static int playerOne = 0;
 	private static int playerTwo = 1;
 
-	public static int activePlayer;
+	public static int activePlayer = 0;
 
 
-	public static int init()
+	public static void init()
 	{
 		activePlayer = 0;
-
-		return activePlayer;
 	}
 
 	public static int changeActivePlayer()
 	{
-		return (activePlayer == playerOne) ? playerTwo : playerOne;
+		activePlayer = (activePlayer == playerOne) ? playerTwo : playerOne;
+		
+		return activePlayer;
 	}
 }

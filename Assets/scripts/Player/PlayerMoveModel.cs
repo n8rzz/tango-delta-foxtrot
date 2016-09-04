@@ -6,6 +6,16 @@
 	public int player;
 	public PointModel point;
 
+
+	public PlayerMoveModel(string gameBoardPosition)
+	{
+		ID++;
+		this.id = ID;
+		this.player = PlayerTurnController.activePlayer;
+		
+		addPoint(gameBoardPosition);
+	}
+
 	public PlayerMoveModel(int player, string gameBoardPosition)
 	{
 		ID++;
