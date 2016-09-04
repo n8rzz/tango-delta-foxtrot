@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 public static class GameBoardController
 {
-
     private static int INVALID_PLAYER = -1;
-    static FormationCollection FormationCollection = new FormationCollection();
-    // GameHistory gameHistory = new GameHistory();
-    static int[][][] gameBoard =
+    private static FormationCollection FormationCollection = new FormationCollection();
+    private static int[][][] gameBoard =
     {
         new[] {
             new int[] {-1, -1, -1, -1},
@@ -35,7 +33,7 @@ public static class GameBoardController
         }
     };
 
-    static public int[][][] GameBoard {
+    public static int[][][] GameBoard {
         get { return gameBoard; }
     }
 
@@ -83,30 +81,18 @@ public static class GameBoardController
         return playerAtPoint;
     }
 
-    // public static void addToHistory(int player, string point)
-    // {
-    //     // FIXME: moveToAdd should be a passed param of type PlayerMoveModel
-    //     PlayerMoveModel moveToAdd = new PlayerMoveModel(player, point);
-    //     // FIXME: Passing moveToMake causes a failure to find System.Collections.Generic
-    //     GameBoardHistory.addMoveToHistory(moveToAdd);
-    // }
-
     public static FormationModel findWinningFormation(PlayerMoveModel moveToMake)
     {
-        // if (GameBoardHistory.isWinPossible())
-        // {
+        if (GameBoardHistory.isWinPossible())
+        {
             List<FormationModel> formations = FormationCollection.filterFormationsForPoint(moveToMake.point);
+            List<FormationModel> formation = formations.Where(f => isWinningFormation(moveToMake.player, f.points)).ToList();
 
-            for (var i = 0; i < formations.Count; i++)
+            if (formation.Count != 0)
             {
-                FormationModel formation = formations[i];
-
-                if (isWinningFormation(moveToMake.player, formations[i].points))
-                {
-                    return formation;
-                }
+                return formation[0];
             }
-        // }
+        }
 
         return null;
     }
