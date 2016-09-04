@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-public class PlayerMoveModel
+﻿public class PlayerMoveModel
 { 
 	public int player;
 	public PointModel point;
@@ -13,13 +10,17 @@ public class PlayerMoveModel
 		addPoint(gameBoardPosition);
 	}
 
+	// add a point to this instance
+	// originally split from the postname, gameBoardPosition is passed in as a string '0-0-0'
+	// this string is run through a translator and then returned as an int[] [0, 0, 0]
 	private void addPoint(string gameBoardPosition)
 	{
-		 PointModel pointToAdd = new PointModel(extractBoardPositionFromPostName(gameBoardPosition));
+		 PointModel pointToAdd = new PointModel(translatePostNameToBoardPosition(gameBoardPosition));
 		 this.point = pointToAdd;
 	}
 
-	private int[] extractBoardPositionFromPostName(string postname)
+	// translate the string position to an int[3]
+	private int[] translatePostNameToBoardPosition(string postname)
 	{
 		int[] gameBoardPosition = new int[3];
 		string[] positions = postname.Split('-');
@@ -30,5 +31,14 @@ public class PlayerMoveModel
 		}
 
 		return gameBoardPosition;
+	}
+
+	// TODO: implenent winning formation highlighting with this method
+	// playerone_0-0-0
+	// playertwo_0-0-0
+	public string translatePlayerAndPointToPostName()
+	{
+		string playerName = (player == 0) ? "playoerone" : "playertwo";
+		return playerName + "_" + point.level + "-" + point.row + "-" + point.column;
 	}
 }
