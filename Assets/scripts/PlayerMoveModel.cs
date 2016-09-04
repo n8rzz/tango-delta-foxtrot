@@ -1,10 +1,15 @@
 ﻿public class PlayerMoveModel
 { 
+	private static int ID = 0;
+
+	public int id;
 	public int player;
 	public PointModel point;
 
 	public PlayerMoveModel(int player, string gameBoardPosition)
 	{
+		ID++;
+		this.id = ID;
 		this.player = player;
 		
 		addPoint(gameBoardPosition);

@@ -30,7 +30,6 @@ public class InteractWithGameBoardPost : MonoBehaviour
 
 	void OnMouseDown() 
 	{
-		// FIXME: gameBoardController.isValidMove
 		if (piecesOnPost > maxPosition) 
 		{
 				return;
@@ -67,7 +66,6 @@ public class InteractWithGameBoardPost : MonoBehaviour
 	private Vector3 calculateNextPiecePosition() 
 	{
 		playerPieceYOffset = (gamePieceY * piecesOnPost) + 0.5f;
-//		playerPieceYOffset = gamePieceY * piecesOnPost;
 
 		return new Vector3(this.transform.position.x, (0 + playerPieceYOffset), this.transform.position.z);
 	}

@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public static class GameBoardController
 {
-
     private static int INVALID_PLAYER = -1;
-    static FormationCollection FormationCollection = new FormationCollection();
-    // GameHistory gameHistory = new GameHistory();
-    static int[][][] gameBoard =
+    private static FormationCollection FormationCollection = new FormationCollection();
+    private static int[][][] gameBoard =
     {
         new[] {
             new int[] {-1, -1, -1, -1},
@@ -35,7 +32,7 @@ public static class GameBoardController
         }
     };
 
-    static public int[][][] GameBoard {
+    public static int[][][] GameBoard {
         get { return gameBoard; }
     }
 
