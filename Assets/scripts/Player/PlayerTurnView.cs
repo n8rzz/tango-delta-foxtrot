@@ -22,7 +22,8 @@ public class PlayerTurnView : MonoBehaviour
 	}
 	
 
-	public void changeActivePlayerText(int currentPlayer)
+	// 
+	public void updateActivePlayerText(int currentPlayer)
 	{
 		setCurrentPlayerText(currentPlayer);
 	}

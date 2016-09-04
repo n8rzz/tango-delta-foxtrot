@@ -144,7 +144,7 @@ public class GameController : MonoBehaviour
 		int currentPlayer = PlayerTurnController.changeActivePlayer();
 
 		var playerTurnViewScript = playerTurnView.GetComponent<PlayerTurnView>();
-		playerTurnViewScript.changeActivePlayerText(currentPlayer);
+		playerTurnViewScript.updateActivePlayerText(currentPlayer);
 	}	
 
 	// reset the turn time
