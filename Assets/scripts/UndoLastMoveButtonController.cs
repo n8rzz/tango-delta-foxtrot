@@ -5,6 +5,7 @@ public class UndoLastMoveButtonController : MonoBehaviour
 {
 	private bool isEnabled = false;
 
+	public bool shouldUndoLastMove = false;
 	public GameObject undoLastMoveButtonController;
 	public GameObject undoLastMoveButton;
 
@@ -26,6 +27,7 @@ public class UndoLastMoveButtonController : MonoBehaviour
 		if (!isEnabled)
 		{
 			isEnabled = true;
+			shouldUndoLastMove = false;
 			changeButtonState(isEnabled);
 		}
 	}
@@ -50,15 +52,9 @@ public class UndoLastMoveButtonController : MonoBehaviour
 	//
 	public void onClickUndoButton()
 	{
-		Debug.Log("click undo");
+		Debug.Log("--- click");
+		shouldUndoLastMove = true;
+
+		disable();
 	}
-
-	// private showUndoLastMoveButton()
-	// {}
-
-	// private hideUndoLastMoveButton()
-	// {}
-
-	// private void initUndo()
-	// {}
 }

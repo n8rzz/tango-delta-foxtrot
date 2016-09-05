@@ -9,7 +9,7 @@ public class GameController : MonoBehaviour
 	private float elapsedTurnTimeLimit = 60.0f;
 	private bool didStart = false;
 	private bool isComplete = false;
-	private IEnumerator undoLastMove;
+	private IEnumerator undoLastMoveCoroutine;
 	private enum GamePhase {
 		beginning = 16,
 		middle = 32,
@@ -77,9 +77,8 @@ public class GameController : MonoBehaviour
 			return;
 		}
 
-		Debug.Log(undoLastMove);
-		if (undoLastMove != null) {
-			StopCoroutine(undoLastMove);
+		if (undoLastMoveCoroutine != null) {
+			StopCoroutine(undoLastMoveCoroutine);
 		}
 
 		// int currentPlayer = PlayerTurnController.activePlayer;
@@ -87,7 +86,7 @@ public class GameController : MonoBehaviour
 		
 		executePlayerMove(playerMove, postPosition, postName);
 		didExecutePlayerMove(postName, playerMove);
-		wrapUpPlayerChange();
+		finalizePlayerChange();
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -116,22 +115,22 @@ public class GameController : MonoBehaviour
 			return;
 		}
 
-		undoLastMove = enableUndoLastMove(playerMove);
-		StartCoroutine(undoLastMove);
+		undoLastMoveCoroutine = enableUndoLastMove(playerMove);
+		StartCoroutine(undoLastMoveCoroutine);
 	}
 
 	//
-	private void wrapUpPlayerChange()
+	private void finalizePlayerChange()
 	{
 		changeActivePlayer();
 		calculateGamePhase();
 		resetTurnTime();
 	}
 
-	/// Instantiates a new game object based on the activePlayer
-	/// Adds name to new game object
-	/// Adds tag to new game object
-	/// Makes new game object a child of the playerMovesContainer
+	// Instantiates a new game object based on the activePlayer
+	// Adds name to new game object
+	// Adds tag to new game object
+	// Makes new game object a child of the playerMovesContainer
 	private void placePlayerPieceOnPost(Vector3 activeGamePost, string postname, int currentPlayer)
 	{
 		if (currentPlayer == 0) 
@@ -145,27 +144,38 @@ public class GameController : MonoBehaviour
 		{				
 			GameObject newmove = Instantiate(playerTwo, activeGamePost, Quaternion.identity) as GameObject;
 			newmove.transform.name = "playertwo_" + postname;
-			newmove.tag = "playerOneMoves";
+			newmove.tag = "playerTwoMoves";
 			newmove.transform.parent = GameObject.FindGameObjectWithTag("playerMovesContainer").transform;
 		}
 	}
 
-	private IEnumerator enableUndoLastMove(PlayerMoveModel plaerMove)
+	private IEnumerator enableUndoLastMove(PlayerMoveModel playerMove)
 	{
-		Debug.Log("--- enableUndoLastMove start");
-		
 		var undoLastMoveButtonControllerScript = undoLastMoveButtonController.GetComponent<UndoLastMoveButtonController>();
-		// show undo button
 		undoLastMoveButtonControllerScript.enable();
-		// bool willUndoLastMove = wait for click;
-		// if willUndoLastMove ? undoLastMove(playerMove) : null
-
+		
 		yield return new WaitForSecondsRealtime(3);
-
-		// hide undo button
+		
 		undoLastMoveButtonControllerScript.disable();
 		
-		Debug.Log("--- enableUndoLastMove end");
+		if (undoLastMoveButtonControllerScript.shouldUndoLastMove)
+		{
+			revertLastMove();
+		};
+	}
+
+	//
+	private void revertLastMove()
+	{
+		Debug.Log("--- UNDO REQUEST INITIATED");
+		PlayerMoveModel lastMove =  GameBoardHistory.findLastPlayerMove();
+		GameBoardHistory.removeLastMoveFromHistory();
+		// findLastMoveOnGameBoard
+		// removeLastMoveFromGameBoard
+		// translateLastMoveToGamePiece
+		// removeLastMoveGamePieceFromPost
+		// updatePiecesOnPost
+		// finalizePlayerChange
 	}
 
 	// change the current player
@@ -188,7 +198,7 @@ public class GameController : MonoBehaviour
 	// more advanced games require a longer turn timer
 	private void calculateGamePhase()
 	{  
-		int currentMoveCount = GameBoardHistory.calculateMovesCount();
+		int currentMoveCount = GameBoardHistory.movesCount();
 
 		if (currentMoveCount == (int)GamePhase.beginning)
 		{
