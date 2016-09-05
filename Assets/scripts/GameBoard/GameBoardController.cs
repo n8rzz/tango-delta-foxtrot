@@ -38,6 +38,7 @@ public static class GameBoardController
     }
 
 
+    //
     public static bool addPlayerAtPoint(PlayerMoveModel moveToMake)
     {
         if (!isValidMove(moveToMake.point)) {
@@ -53,6 +54,24 @@ public static class GameBoardController
         return true;
     }
 
+    //
+    public static bool removePlayerAtPoint(PlayerMoveModel moveToRemove) 
+    {
+        if (findPlayerForPoint(moveToRemove.point) == moveToRemove.player)
+        {
+            int level = moveToRemove.point.level;
+            int row = moveToRemove.point.row;
+            int column = moveToRemove.point.level;
+            
+            gameBoard[level][row][column] = INVALID_PLAYER;
+            
+            return true;
+        }
+
+        return false;
+    }
+
+    //
     public static bool isValidMove(PointModel point)
     {
         if (point.isPointOnBottomLevel())
@@ -66,11 +85,13 @@ public static class GameBoardController
         return isPointAvailable(point) && (findPlayerForPoint(comparePoint) != INVALID_PLAYER);
     }
 
+    //
     public static bool isPointAvailable(PointModel point)
     {
         return findPlayerForPoint(point) == INVALID_PLAYER;
     }
 
+    //
     public static int findPlayerForPoint(PointModel point)
     {
         int level = point.level;
@@ -81,6 +102,7 @@ public static class GameBoardController
         return playerAtPoint;
     }
 
+    //
     public static FormationModel findWinningFormation(PlayerMoveModel moveToMake)
     {
         if (GameBoardHistory.isWinPossible())
@@ -96,7 +118,8 @@ public static class GameBoardController
 
         return null;
     }
-
+    
+    //
     private static bool isWinningFormation(int player, List<PointModel> formationPoints)
     {
         for (var i = 0; i < formationPoints.Count; i++)
@@ -112,6 +135,7 @@ public static class GameBoardController
         return true;
     }
 
+    //
     public static void resetGameBoard() 
     {
         for (var level = 0; level < gameBoard.GetLength(0); level++) 

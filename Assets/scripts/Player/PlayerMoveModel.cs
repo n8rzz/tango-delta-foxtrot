@@ -27,7 +27,7 @@
 
 	// add a point to this instance
 	// originally split from the postname, gameBoardPosition is passed in as a string '0-0-0'
-	// this string is run through a translator and then returned as an int[] [0, 0, 0]
+	// this string is run through a translator and returned as an int[] [0, 0, 0]
 	private void addPoint(string gameBoardPosition)
 	{
 		 PointModel pointToAdd = new PointModel(translatePostNameToBoardPosition(gameBoardPosition));
@@ -46,6 +46,13 @@
 		}
 
 		return gameBoardPosition;
+	}
+
+	// translate an int[3] position to a string
+	private string translateBoardPositionToPostName(int[] point)
+	{
+
+		return "";
 	}
 
 	// TODO: implenent winning formation highlighting with this method

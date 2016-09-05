@@ -169,13 +169,16 @@ public class GameController : MonoBehaviour
 	{
 		Debug.Log("--- UNDO REQUEST INITIATED");
 		PlayerMoveModel lastMove =  GameBoardHistory.findLastPlayerMove();
-		GameBoardHistory.removeLastMoveFromHistory();
-		// findLastMoveOnGameBoard
-		// removeLastMoveFromGameBoard
-		// translateLastMoveToGamePiece
-		// removeLastMoveGamePieceFromPost
-		// updatePiecesOnPost
-		// finalizePlayerChange
+		
+		if (GameBoardHistory.removeLastMoveFromHistory() &&
+			GameBoardController.removePlayerAtPoint(lastMove))
+		{
+			Debug.Log("# move removed from history and board");
+			// translateLastMoveToGamePiece
+			// removeLastMoveGamePieceFromPost
+			// updatePiecesOnPost
+			// finalizePlayerChange
+		}
 	}
 
 	// change the current player

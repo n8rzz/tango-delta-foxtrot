@@ -34,9 +34,11 @@ public static class GameBoardHistory
 	}
 
 	// remove the last move from history, update length to reflect change in size.
-	public static void removeLastMoveFromHistory()
+	public static bool removeLastMoveFromHistory()
 	{
 		history.RemoveAt(length - 1);
 		length = history.Count;
+
+		return true;
 	}
 }
