@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
 	private float elapsedTurnTimeLimit = 60.0f;
 	private bool didStart = false;
 	private bool isComplete = false;
+	private IEnumerator undoLastMove;
 	private enum GamePhase {
 		beginning = 16,
 		middle = 32,
@@ -21,6 +22,7 @@ public class GameController : MonoBehaviour
 	public GameObject masterGameTimeText;
 	public GameObject elapsedTurnTimeText;
 	public GameObject winnerBannerText;
+	public GameObject undoLastMoveButtonController;
 
 
 	// Unity lifecycle method
@@ -33,6 +35,7 @@ public class GameController : MonoBehaviour
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
 		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         playerTurnView = GameObject.FindGameObjectWithTag("playerTurnView").gameObject;
+		undoLastMoveButtonController = GameObject.FindGameObjectWithTag("undoLastMoveButtonController").gameObject;
 		winnerBannerText.GetComponent<Text>().text = "";
 		currentGameTime = 0f;
 		didStart = true;
@@ -74,11 +77,17 @@ public class GameController : MonoBehaviour
 			return;
 		}
 
+		Debug.Log(undoLastMove);
+		if (undoLastMove != null) {
+			StopCoroutine(undoLastMove);
+		}
+
 		// int currentPlayer = PlayerTurnController.activePlayer;
 		PlayerMoveModel playerMove = new PlayerMoveModel(postName);
-
+		
 		executePlayerMove(playerMove, postPosition, postName);
 		didExecutePlayerMove(postName, playerMove);
+		wrapUpPlayerChange();
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -88,6 +97,7 @@ public class GameController : MonoBehaviour
 	private void executePlayerMove(PlayerMoveModel playerMove, Vector3 postPosition, string postName)
 	{
 		GameBoardController.addPlayerAtPoint(playerMove);
+		GameBoardHistory.addMoveToHistory(playerMove);
 		placePlayerPieceOnPost(postPosition, postName, playerMove.player);
 	}
 		
@@ -95,8 +105,6 @@ public class GameController : MonoBehaviour
 	// check for a win and stop the game if one is found.
 	private void didExecutePlayerMove(string postName, PlayerMoveModel playerMove)
 	{
-		GameBoardHistory.addMoveToHistory(playerMove);
-		
 		FormationModel winningFormation = GameBoardController.findWinningFormation(playerMove);
 		if (winningFormation != null)
 		{
@@ -108,13 +116,13 @@ public class GameController : MonoBehaviour
 			return;
 		}
 
-		// TODO: undo last move should go here 
-		// 		initiate wait time for undo
-		// 		StartCoroutine(makeUndoMoveAvailable());
-		// 		disable click until timer is up
-		StartCoroutine(enableUndoLastMove(playerMove));
-		Debug.Log("were back");
+		undoLastMove = enableUndoLastMove(playerMove);
+		StartCoroutine(undoLastMove);
+	}
 
+	//
+	private void wrapUpPlayerChange()
+	{
 		changeActivePlayer();
 		calculateGamePhase();
 		resetTurnTime();
@@ -144,21 +152,20 @@ public class GameController : MonoBehaviour
 
 	private IEnumerator enableUndoLastMove(PlayerMoveModel plaerMove)
 	{
-		// CanvasGroup cg = MyRectTransform.GetComponent<CanvasGroup>();
-		// cg.interactable= false;
-		// cg.alpha = 0;​
-
-		Debug.Log("before yield");
-		print (Time.time);
+		Debug.Log("--- enableUndoLastMove start");
+		
+		var undoLastMoveButtonControllerScript = undoLastMoveButtonController.GetComponent<UndoLastMoveButtonController>();
 		// show undo button
+		undoLastMoveButtonControllerScript.enable();
 		// bool willUndoLastMove = wait for click;
 		// if willUndoLastMove ? undoLastMove(playerMove) : null
 
-		yield return new WaitForSecondsRealtime(5);
+		yield return new WaitForSecondsRealtime(3);
 
 		// hide undo button
-		print (Time.time);
-		Debug.Log("POST 5 SECONDS");
+		undoLastMoveButtonControllerScript.disable();
+		
+		Debug.Log("--- enableUndoLastMove end");
 	}
 
 	// change the current player

@@ -6,18 +6,48 @@ public class UndoLastMoveButtonController : MonoBehaviour
 	private bool isEnabled = false;
 
 	public GameObject undoLastMoveButtonController;
+	public GameObject undoLastMoveButton;
 
+
+	// Unity lifecycle method
 	void Start () 
 	{
+		isEnabled = false;
 		undoLastMoveButtonController = GameObject.FindGameObjectWithTag("undoLastMoveButtonController").gameObject;
+		undoLastMoveButton = GameObject.FindGameObjectWithTag("undoLastMoveButton").gameObject;
+		
+		changeButtonState(isEnabled);
 	}
 
-	// public void enable()
-	// {}
 
-	// public void disable()
-	// {}
+	// enable the button and show it in the view
+	public void enable()
+	{
+		if (!isEnabled)
+		{
+			isEnabled = true;
+			changeButtonState(isEnabled);
+		}
+	}
 
+	// disable the button and remove it from the view
+	public void disable()
+	{
+		if (isEnabled)
+		{
+			isEnabled = false;
+			changeButtonState(isEnabled);
+		}
+	}
+
+	// change the current state of the button
+	private void changeButtonState(bool nextState)
+	{
+		undoLastMoveButton.SetActive(isEnabled);
+	}
+
+
+	//
 	public void onClickUndoButton()
 	{
 		Debug.Log("click undo");
