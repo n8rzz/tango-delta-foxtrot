@@ -55,7 +55,7 @@ public class InteractWithGameBoardPost : MonoBehaviour
 		return piecesOnPost + "-" + this.name;
 	}
 
-	//
+	// change the gameBoardPost back to its initial color
 	private void revertPostToInitialColor()
 	{
 		if (!didClick)
@@ -64,13 +64,16 @@ public class InteractWithGameBoardPost : MonoBehaviour
 		}
 	}
 
+	// change the color of this gameBoardPost
 	//
+	// this should only be called from OnMouseEnter and is used as a visual cue for the player that shows 
+	// what post they are about to play on.
 	private void changePostToHoverColor()
 	{
 		GetComponent<Renderer>().material.color = Color.green;
 	}
 
-	//
+	// caclulate an x, y, z position in space that a new playerPiece should be located at.
 	private Vector3 calculateNextPiecePosition() 
 	{
 		int piecesOnPost = caclulatePiecesOnPost();

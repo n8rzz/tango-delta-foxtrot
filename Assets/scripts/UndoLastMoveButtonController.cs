@@ -41,17 +41,19 @@ public class UndoLastMoveButtonController : MonoBehaviour
 		}
 	}
 
+	// onClick handler for undo button.
+	// changes shouldUndoLastMove which is watched by GameController.Update(). changing this prop to true
+	// will initiate the process to undo the last player move.
+	public void onClickUndoButton()
+	{
+		if (isEnabled) {
+			shouldUndoLastMove = true;
+		}
+	}
+
 	// change the current state of the button
 	private void changeButtonState(bool nextState)
 	{
 		undoLastMoveButton.SetActive(isEnabled);
-	}
-
-	//
-	public void onClickUndoButton()
-	{
-		shouldUndoLastMove = true;
-
-		disable();
 	}
 }

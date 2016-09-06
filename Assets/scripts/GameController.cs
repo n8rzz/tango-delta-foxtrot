@@ -126,7 +126,8 @@ public class GameController : MonoBehaviour
 		StartCoroutine(undoLastMoveCoroutine);
 	}
 
-	//
+	// wrapper method for finishing up a playerMove
+	// this method should be called from only .willExecutePlayerMove() or .revertLastMove()
 	private void finalizePlayerChange()
 	{
 		changeActivePlayer();
@@ -163,7 +164,7 @@ public class GameController : MonoBehaviour
 		Destroy(pieceToRemove);
 	}
 
-	//
+	// coroutine that enables and then disables the ability to undo a move.
 	private IEnumerator enableUndoLastMove()
 	{
 		undoLastMoveButtonControllerScript.enable();
@@ -181,15 +182,9 @@ public class GameController : MonoBehaviour
 
 		PlayerMoveModel lastMove =  GameBoardHistory.findLastPlayerMove();
 		
-		Debug.Log("before " + GameBoardController.findPlayerAtPoint(lastMove.point));
-
-		bool removeFromHistory = GameBoardHistory.removeLastMoveFromHistory();
-		bool removeFromGameBoard = GameBoardController.removePlayerAtPoint(lastMove);
-
-		if (removeFromHistory && removeFromGameBoard) 
+		if (GameBoardHistory.removeLastMoveFromHistory() && 
+			GameBoardController.removePlayerAtPoint(lastMove)) 
 		{
-			Debug.Log("after " + GameBoardController.findPlayerAtPoint(lastMove.point));
-
 			removePlayerPieceFromPost(lastMove);	
 			finalizePlayerChange();
 		}
