@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameController : MonoBehaviour 
 {
@@ -8,6 +9,8 @@ public class GameController : MonoBehaviour
 	private float elapsedTurnTimeLimit = 60.0f;
 	private bool didStart = false;
 	private bool isComplete = false;
+	private IEnumerator undoLastMoveCoroutine;
+	private UndoLastMoveButtonController undoLastMoveButtonControllerScript;
 	private enum GamePhase {
 		beginning = 16,
 		middle = 32,
@@ -20,8 +23,9 @@ public class GameController : MonoBehaviour
 	public GameObject masterGameTimeText;
 	public GameObject elapsedTurnTimeText;
 	public GameObject winnerBannerText;
+	public GameObject undoLastMoveButtonController;
 
-
+	
 	// Unity lifecycle method
 	void Start () 
 	{
@@ -32,6 +36,8 @@ public class GameController : MonoBehaviour
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
 		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         playerTurnView = GameObject.FindGameObjectWithTag("playerTurnView").gameObject;
+		undoLastMoveButtonController = GameObject.FindGameObjectWithTag("undoLastMoveButtonController").gameObject;
+		undoLastMoveButtonControllerScript = undoLastMoveButtonController.GetComponent<UndoLastMoveButtonController>();
 		winnerBannerText.GetComponent<Text>().text = "";
 		currentGameTime = 0f;
 		didStart = true;
@@ -45,6 +51,10 @@ public class GameController : MonoBehaviour
 		// TODO: move this time logic to another class
 		currentGameTime += Time.deltaTime;
 		elapsedTurnTime -= Time.deltaTime;
+
+		if (undoLastMoveButtonControllerScript.shouldUndoLastMove && undoLastMoveButtonControllerScript.isEnabled) {
+			revertLastMove();
+		}
 	}
 
 	// Unity lifecycle method
@@ -73,15 +83,16 @@ public class GameController : MonoBehaviour
 			return;
 		}
 
+		if (undoLastMoveCoroutine != null) {
+			inturruptUndoLastMoveCoroutine();
+		}
+
 		// int currentPlayer = PlayerTurnController.activePlayer;
 		PlayerMoveModel playerMove = new PlayerMoveModel(postName);
-
+		
 		executePlayerMove(playerMove, postPosition, postName);
-		// TODO: undo last move should go here 
-		// 		initiate wait time for undo
-		// 		StartCoroutine(makeUndoMoveAvailable());
-		// 		disable click until timer is up
 		didExecutePlayerMove(postName, playerMove);
+		finalizePlayerChange();
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -91,6 +102,7 @@ public class GameController : MonoBehaviour
 	private void executePlayerMove(PlayerMoveModel playerMove, Vector3 postPosition, string postName)
 	{
 		GameBoardController.addPlayerAtPoint(playerMove);
+		GameBoardHistory.addMoveToHistory(playerMove);
 		placePlayerPieceOnPost(postPosition, postName, playerMove.player);
 	}
 		
@@ -98,28 +110,34 @@ public class GameController : MonoBehaviour
 	// check for a win and stop the game if one is found.
 	private void didExecutePlayerMove(string postName, PlayerMoveModel playerMove)
 	{
-		GameBoardHistory.addMoveToHistory(playerMove);
-		
 		FormationModel winningFormation = GameBoardController.findWinningFormation(playerMove);
 		if (winningFormation != null)
 		{
-			// do end game things
 			isComplete = true;
+			inturruptUndoLastMoveCoroutine();
 			// show winning formation
 			buildWinnerText();
-			
+
 			return;
 		}
 
+		undoLastMoveCoroutine = enableUndoLastMove();
+		StartCoroutine(undoLastMoveCoroutine);
+	}
+
+	// wrapper method for finishing up a playerMove
+	// this method should be called from only .willExecutePlayerMove() or .revertLastMove()
+	private void finalizePlayerChange()
+	{
 		changeActivePlayer();
 		calculateGamePhase();
 		resetTurnTime();
 	}
 
-	/// Instantiates a new game object based on the activePlayer
-	/// Adds name to new game object
-	/// Adds tag to new game object
-	/// Makes new game object a child of the playerMovesContainer
+	// Instantiates a new game object based on the activePlayer
+	// Adds name to new game object
+	// Adds tag to new game object
+	// Makes new game object a child of the playerMovesContainer
 	private void placePlayerPieceOnPost(Vector3 activeGamePost, string postname, int currentPlayer)
 	{
 		if (currentPlayer == 0) 
@@ -133,9 +151,50 @@ public class GameController : MonoBehaviour
 		{				
 			GameObject newmove = Instantiate(playerTwo, activeGamePost, Quaternion.identity) as GameObject;
 			newmove.transform.name = "playertwo_" + postname;
-			newmove.tag = "playerOneMoves";
+			newmove.tag = "playerTwoMoves";
 			newmove.transform.parent = GameObject.FindGameObjectWithTag("playerMovesContainer").transform;
 		}
+	}
+
+	// remove a player piece from the view
+	private void removePlayerPieceFromPost(PlayerMoveModel playerPiece)
+	{
+		GameObject pieceToRemove = GameObject.Find(playerPiece.translateBoardPositionToPieceName());
+		Destroy(pieceToRemove);
+	}
+
+	// coroutine that enables and then disables the ability to undo a move.
+	private IEnumerator enableUndoLastMove()
+	{
+		undoLastMoveButtonControllerScript.enable();
+		
+		yield return new WaitForSecondsRealtime(3);
+		
+		undoLastMoveButtonControllerScript.disable();
+	}
+
+	// undo the lastMove
+	private void revertLastMove()
+	{
+		undoLastMoveButtonControllerScript.disable();
+		inturruptUndoLastMoveCoroutine();
+
+		PlayerMoveModel lastMove =  GameBoardHistory.findLastPlayerMove();
+		
+		if (GameBoardHistory.removeLastMoveFromHistory() && 
+			GameBoardController.removePlayerAtPoint(lastMove)) 
+		{
+			removePlayerPieceFromPost(lastMove);	
+			finalizePlayerChange();
+		}
+	}
+
+	// used to stop the timer inside the undoLastMoveCoroutine
+	// useful for when a player clicks the undo button or when the next player makes thier move
+	// before the undo time has run out.
+	private void inturruptUndoLastMoveCoroutine()
+	{
+		StopCoroutine(undoLastMoveCoroutine);
 	}
 
 	// change the current player
@@ -158,7 +217,7 @@ public class GameController : MonoBehaviour
 	// more advanced games require a longer turn timer
 	private void calculateGamePhase()
 	{  
-		int currentMoveCount = GameBoardHistory.calculateMovesCount();
+		int currentMoveCount = GameBoardHistory.movesCount();
 
 		if (currentMoveCount == (int)GamePhase.beginning)
 		{
