@@ -1,9 +1,14 @@
-﻿public class PointModel
+﻿// Provide a definition of a Point and how it relates to the gameBoard.
+public class PointModel
 {
     private static int ID = 0;
     public int id;
+
+    // Z-axis
     public int level;
+    // Y-axis
     public int row;
+    // X-axis
     public int column;
 
     public PointModel(int[] playerMove)
@@ -26,11 +31,16 @@
         this.column = column;
     }
 
+    // determine if this is located on the bottom level of the gameBoard
     public bool isPointOnBottomLevel()
     {
         return level == 0;
     }
 
+    // find the level below this.level.
+    // 
+    // this method should not be used by itself and should instead be used in conjunction 
+    // with this.isPointOnBottomLevel()
     public int findLevelBelowPoint()
     {
         return level - 1;

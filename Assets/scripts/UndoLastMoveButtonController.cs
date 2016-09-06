@@ -26,6 +26,7 @@ public class UndoLastMoveButtonController : MonoBehaviour
 		{
 			isEnabled = true;
 			shouldUndoLastMove = false;
+			
 			changeButtonState(isEnabled);
 		}
 	}
@@ -37,6 +38,7 @@ public class UndoLastMoveButtonController : MonoBehaviour
 		{
 			isEnabled = false;
 			shouldUndoLastMove = false;
+
 			changeButtonState(isEnabled);
 		}
 	}

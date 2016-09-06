@@ -87,7 +87,6 @@ public class GameController : MonoBehaviour
 			inturruptUndoLastMoveCoroutine();
 		}
 
-		// int currentPlayer = PlayerTurnController.activePlayer;
 		PlayerMoveModel playerMove = new PlayerMoveModel(postName);
 		
 		executePlayerMove(playerMove, postPosition, postName);
@@ -156,13 +155,6 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-	// remove a player piece from the view
-	private void removePlayerPieceFromPost(PlayerMoveModel playerPiece)
-	{
-		GameObject pieceToRemove = GameObject.Find(playerPiece.translateBoardPositionToPieceName());
-		Destroy(pieceToRemove);
-	}
-
 	// coroutine that enables and then disables the ability to undo a move.
 	private IEnumerator enableUndoLastMove()
 	{
@@ -174,6 +166,9 @@ public class GameController : MonoBehaviour
 	}
 
 	// undo the lastMove
+	// entry into this method comes as a result of two things; 1) a player has clicked on the 
+	// undo button and, 2) the .Update() method of this class has picked up the truthy value of 
+	// undoLastMoveButtonControllerScript.shouldUndoLastMove.
 	private void revertLastMove()
 	{
 		undoLastMoveButtonControllerScript.disable();
@@ -187,6 +182,13 @@ public class GameController : MonoBehaviour
 			removePlayerPieceFromPost(lastMove);	
 			finalizePlayerChange();
 		}
+	}
+
+		// remove a player piece from the view
+	private void removePlayerPieceFromPost(PlayerMoveModel playerPiece)
+	{
+		GameObject pieceToRemove = GameObject.Find(playerPiece.translateBoardPositionToPieceName());
+		Destroy(pieceToRemove);
 	}
 
 	// used to stop the timer inside the undoLastMoveCoroutine

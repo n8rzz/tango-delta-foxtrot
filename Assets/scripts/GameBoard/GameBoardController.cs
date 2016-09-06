@@ -72,7 +72,7 @@ public static class GameBoardController
         return false;
     }
 
-    // is a move to be made valid
+    // is the move to be made valid
     public static bool isValidMove(PointModel point)
     {
         if (point.isPointOnBottomLevel())
