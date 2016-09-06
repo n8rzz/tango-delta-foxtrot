@@ -52,7 +52,6 @@ public class GameController : MonoBehaviour
 		currentGameTime += Time.deltaTime;
 		elapsedTurnTime -= Time.deltaTime;
 
-		// TODO: this seems wasteful. should probably make this a class level property
 		if (undoLastMoveButtonControllerScript.shouldUndoLastMove && undoLastMoveButtonControllerScript.isEnabled) {
 			revertLastMove();
 		}
