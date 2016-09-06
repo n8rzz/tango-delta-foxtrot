@@ -8,28 +8,28 @@ public static class GameBoardController
     private static int[][][] gameBoard =
     {
         new[] {
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1}
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER}
         },
         new[] {
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1}
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER}
         },
         new[] {
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1}
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER}
         },
         new[] {
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1},
-            new int[] {-1, -1, -1, -1}
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER},
+            new int[] {INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER, INVALID_PLAYER}
         }
     };
 
@@ -144,7 +144,7 @@ public static class GameBoardController
         {
             PointModel point = new PointModel(level, row, column);
 
-            if (findPlayerAtPoint(point) != -1)
+            if (foundPoint != INVALID_PLAYER)
             {
                 count++;
             }
@@ -164,7 +164,6 @@ public static class GameBoardController
                 {
                     gameBoard[level][row][column] = INVALID_PLAYER;
                 }
-
             }
         }
     }

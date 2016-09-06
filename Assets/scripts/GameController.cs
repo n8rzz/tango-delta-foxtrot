@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
 	private bool didStart = false;
 	private bool isComplete = false;
 	private IEnumerator undoLastMoveCoroutine;
+	private UndoLastMoveButtonController undoLastMoveButtonControllerScript;
 	private enum GamePhase {
 		beginning = 16,
 		middle = 32,
@@ -24,7 +25,7 @@ public class GameController : MonoBehaviour
 	public GameObject winnerBannerText;
 	public GameObject undoLastMoveButtonController;
 
-
+	
 	// Unity lifecycle method
 	void Start () 
 	{
@@ -36,6 +37,7 @@ public class GameController : MonoBehaviour
 		winnerBannerText = GameObject.FindGameObjectWithTag("winnerBanner").gameObject;
         playerTurnView = GameObject.FindGameObjectWithTag("playerTurnView").gameObject;
 		undoLastMoveButtonController = GameObject.FindGameObjectWithTag("undoLastMoveButtonController").gameObject;
+		undoLastMoveButtonControllerScript = undoLastMoveButtonController.GetComponent<UndoLastMoveButtonController>();
 		winnerBannerText.GetComponent<Text>().text = "";
 		currentGameTime = 0f;
 		didStart = true;
@@ -49,6 +51,11 @@ public class GameController : MonoBehaviour
 		// TODO: move this time logic to another class
 		currentGameTime += Time.deltaTime;
 		elapsedTurnTime -= Time.deltaTime;
+
+		// TODO: this seems wasteful. should probably make this a class level property
+		if (undoLastMoveButtonControllerScript.shouldUndoLastMove && undoLastMoveButtonControllerScript.isEnabled) {
+			revertLastMove();
+		}
 	}
 
 	// Unity lifecycle method
@@ -78,7 +85,7 @@ public class GameController : MonoBehaviour
 		}
 
 		if (undoLastMoveCoroutine != null) {
-			StopCoroutine(undoLastMoveCoroutine);
+			inturruptUndoLastMoveCoroutine();
 		}
 
 		// int currentPlayer = PlayerTurnController.activePlayer;
@@ -107,15 +114,15 @@ public class GameController : MonoBehaviour
 		FormationModel winningFormation = GameBoardController.findWinningFormation(playerMove);
 		if (winningFormation != null)
 		{
-			// do end game things
 			isComplete = true;
+			inturruptUndoLastMoveCoroutine();
 			// show winning formation
 			buildWinnerText();
-			
+
 			return;
 		}
 
-		undoLastMoveCoroutine = enableUndoLastMove(playerMove);
+		undoLastMoveCoroutine = enableUndoLastMove();
 		StartCoroutine(undoLastMoveCoroutine);
 	}
 
@@ -157,34 +164,43 @@ public class GameController : MonoBehaviour
 	}
 
 	//
-	private IEnumerator enableUndoLastMove(PlayerMoveModel playerMove)
+	private IEnumerator enableUndoLastMove()
 	{
-		var undoLastMoveButtonControllerScript = undoLastMoveButtonController.GetComponent<UndoLastMoveButtonController>();
 		undoLastMoveButtonControllerScript.enable();
 		
 		yield return new WaitForSecondsRealtime(3);
 		
 		undoLastMoveButtonControllerScript.disable();
-		
-		if (undoLastMoveButtonControllerScript.shouldUndoLastMove)
-		{
-			revertLastMove();
-		};
 	}
 
 	// undo the lastMove
 	private void revertLastMove()
 	{
+		undoLastMoveButtonControllerScript.disable();
+		inturruptUndoLastMoveCoroutine();
+
 		PlayerMoveModel lastMove =  GameBoardHistory.findLastPlayerMove();
 		
-		if (GameBoardHistory.removeLastMoveFromHistory() &&
-			GameBoardController.removePlayerAtPoint(lastMove))
+		Debug.Log("before " + GameBoardController.findPlayerAtPoint(lastMove.point));
+
+		bool removeFromHistory = GameBoardHistory.removeLastMoveFromHistory();
+		bool removeFromGameBoard = GameBoardController.removePlayerAtPoint(lastMove);
+
+		if (removeFromHistory && removeFromGameBoard) 
 		{
-			removePlayerPieceFromPost(lastMove);
-			// updatePiecesOnPost
-			
-			// finalizePlayerChange();
+			Debug.Log("after " + GameBoardController.findPlayerAtPoint(lastMove.point));
+
+			removePlayerPieceFromPost(lastMove);	
+			finalizePlayerChange();
 		}
+	}
+
+	// used to stop the timer inside the undoLastMoveCoroutine
+	// useful for when a player clicks the undo button or when the next player makes thier move
+	// before the undo time has run out.
+	private void inturruptUndoLastMoveCoroutine()
+	{
+		StopCoroutine(undoLastMoveCoroutine);
 	}
 
 	// change the current player
