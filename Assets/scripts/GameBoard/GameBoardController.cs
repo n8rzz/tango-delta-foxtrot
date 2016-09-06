@@ -57,7 +57,7 @@ public static class GameBoardController
     //
     public static bool removePlayerAtPoint(PlayerMoveModel moveToRemove) 
     {
-        if (findPlayerForPoint(moveToRemove.point) == moveToRemove.player)
+        if (findPlayerAtPoint(moveToRemove.point) == moveToRemove.player)
         {
             int level = moveToRemove.point.level;
             int row = moveToRemove.point.row;
@@ -82,17 +82,17 @@ public static class GameBoardController
         int level = point.findLevelBelowPoint();
         PointModel comparePoint = new PointModel(level, point.row, point.column);
 
-        return isPointAvailable(point) && (findPlayerForPoint(comparePoint) != INVALID_PLAYER);
+        return isPointAvailable(point) && (findPlayerAtPoint(comparePoint) != INVALID_PLAYER);
     }
 
     //
     public static bool isPointAvailable(PointModel point)
     {
-        return findPlayerForPoint(point) == INVALID_PLAYER;
+        return findPlayerAtPoint(point) == INVALID_PLAYER;
     }
 
     //
-    public static int findPlayerForPoint(PointModel point)
+    public static int findPlayerAtPoint(PointModel point)
     {
         int level = point.level;
         int row = point.row;
@@ -126,13 +126,31 @@ public static class GameBoardController
         {
             PointModel point = formationPoints[i];
 
-            if (findPlayerForPoint(point) != player)
+            if (findPlayerAtPoint(point) != player)
             {
                 return false;
             }
         }
 
         return true;
+    }
+
+    //
+    public static int findPiecesOnPostForRowAndColumn(int row, int column)
+    {
+        int count = 0;
+
+        for (var level = 0; level < gameBoard.GetLength(0); level++) 
+        {
+            PointModel point = new PointModel(level, row, column);
+
+            if (findPlayerAtPoint(point) != -1)
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     //

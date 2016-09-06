@@ -48,19 +48,13 @@
 		return gameBoardPosition;
 	}
 
-	// translate an int[3] position to a string
-	private string translateBoardPositionToPostName(int[] point)
-	{
-
-		return "";
-	}
-
-	// TODO: implenent winning formation highlighting with this method
+	// translate the current int[3] points to a string that can be used to locate a gameObject 
 	// playerone_0-0-0
 	// playertwo_0-0-0
-	public string translatePlayerAndPointToPostName()
+	public string translateBoardPositionToPieceName()
 	{
-		string playerName = (player == 0) ? "playoerone" : "playertwo";
+		string playerName = (player == 0) ? "playerone" : "playertwo";
+
 		return playerName + "_" + point.level + "-" + point.row + "-" + point.column;
 	}
 }

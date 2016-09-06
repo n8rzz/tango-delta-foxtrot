@@ -149,6 +149,14 @@ public class GameController : MonoBehaviour
 		}
 	}
 
+	// remove a player piece from the view
+	private void removePlayerPieceFromPost(PlayerMoveModel playerPiece)
+	{
+		GameObject pieceToRemove = GameObject.Find(playerPiece.translateBoardPositionToPieceName());
+		Destroy(pieceToRemove);
+	}
+
+	//
 	private IEnumerator enableUndoLastMove(PlayerMoveModel playerMove)
 	{
 		var undoLastMoveButtonControllerScript = undoLastMoveButtonController.GetComponent<UndoLastMoveButtonController>();
@@ -164,20 +172,18 @@ public class GameController : MonoBehaviour
 		};
 	}
 
-	//
+	// undo the lastMove
 	private void revertLastMove()
 	{
-		Debug.Log("--- UNDO REQUEST INITIATED");
 		PlayerMoveModel lastMove =  GameBoardHistory.findLastPlayerMove();
 		
 		if (GameBoardHistory.removeLastMoveFromHistory() &&
 			GameBoardController.removePlayerAtPoint(lastMove))
 		{
-			Debug.Log("# move removed from history and board");
-			// translateLastMoveToGamePiece
-			// removeLastMoveGamePieceFromPost
+			removePlayerPieceFromPost(lastMove);
 			// updatePiecesOnPost
-			// finalizePlayerChange
+			
+			// finalizePlayerChange();
 		}
 	}
 
