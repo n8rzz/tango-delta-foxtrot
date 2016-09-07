@@ -1,8 +1,10 @@
-﻿public class PlayerMoveModel
+﻿// 
+public class PlayerMoveModel
 { 
 	private static int ID = 0;
 
 	public int id;
+	// FIXME: change to enum
 	public int player;
 	public PointModel point;
 
@@ -26,6 +28,7 @@
 	}
 
 	// add a point to this instance
+	//
 	// originally split from the postname, gameBoardPosition is passed in as a string '0-0-0'
 	// this string is run through a translator and returned as an int[] [0, 0, 0]
 	private void addPoint(string gameBoardPosition)
@@ -49,8 +52,8 @@
 	}
 
 	// translate the current int[3] points to a string that can be used to locate a gameObject 
-	// playerone_0-0-0
-	// playertwo_0-0-0
+	// ex: playerone_0-0-0
+	// ex: playertwo_0-0-0
 	public string translateBoardPositionToPieceName()
 	{
 		string playerName = (player == 0) ? "playerone" : "playertwo";

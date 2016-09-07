@@ -23,16 +23,15 @@ public class InteractWithGameBoardPost : MonoBehaviour
 		changePostToHoverColor();
 	}
 
-	// Unity lifecycle method
+	// Unity event method
 	void OnMouseExit()
 	{
 		revertPostToInitialColor();
 	}
 
-	// Unity lifecycle method
+	// Unity event method
 	void OnMouseDown() 
 	{
-		// TODO: this may not be needed. possibly covered by GameBoardController.isValidMove()
 		int piecesOnPost = caclulatePiecesOnPost();
 		if (piecesOnPost > maxPosition) 
 		{
@@ -44,6 +43,7 @@ public class InteractWithGameBoardPost : MonoBehaviour
 
 		gameController.GetComponent<GameController>().willExecutePlayerMove(postPosition, gameBoardPosition);
 	}
+
 
 	// piecesOnPost = level
 	// this.name = 'row-column'

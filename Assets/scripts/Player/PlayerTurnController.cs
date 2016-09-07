@@ -1,4 +1,5 @@
-﻿public static class PlayerTurnController
+﻿//
+public static class PlayerTurnController
 {
 	// FIXME: change these two properties to an enum
 	private static int playerOne = 0;
@@ -16,6 +17,7 @@
 	}
 
 	// change the activePlayer. 
+	//
 	// called after a move was successfully placed and a player's turn has finished.
 	public static int changeActivePlayer()
 	{

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 
+// Provides a definition of a Formation, or a series of 4 points that make up a winning formaiton.
 public class FormationModel
 {
 	private static int ID = 0;
+	
 	public int id;
-
 	public string type;
 	public List<PointModel> points;
 

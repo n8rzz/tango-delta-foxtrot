@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+//
 public static class FormationModelBuilder
 {
     static private int MAX_LENGTH = 4;

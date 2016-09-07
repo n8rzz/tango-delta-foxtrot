@@ -24,6 +24,8 @@ public class GameController : MonoBehaviour
 	public GameObject elapsedTurnTimeText;
 	public GameObject winnerBannerText;
 	public GameObject undoLastMoveButtonController;
+	public GameObject playerOneScoreView;
+	public GameObject playerTwoScoreView;
 
 	
 	// Unity lifecycle method
@@ -31,6 +33,7 @@ public class GameController : MonoBehaviour
 	{
 		// reset the PlayerTurnController, this is only helpful when a game gets reset or restarted
 		PlayerTurnController.init();
+		PlayerScoreController.startNewGame();
 
         masterGameTimeText = GameObject.FindGameObjectWithTag("masterGameTime").gameObject;
 		elapsedTurnTimeText = GameObject.FindGameObjectWithTag("elapsedTurnTime").gameObject;
@@ -38,6 +41,12 @@ public class GameController : MonoBehaviour
         playerTurnView = GameObject.FindGameObjectWithTag("playerTurnView").gameObject;
 		undoLastMoveButtonController = GameObject.FindGameObjectWithTag("undoLastMoveButtonController").gameObject;
 		undoLastMoveButtonControllerScript = undoLastMoveButtonController.GetComponent<UndoLastMoveButtonController>();
+		playerOneScoreView = GameObject.FindGameObjectWithTag("playerOneScoreView").gameObject;
+		playerTwoScoreView = GameObject.FindGameObjectWithTag("playerTwoScoreView").gameObject;
+
+		// FIXME: move this to a view class
+		playerOneScoreView.GetComponent<Text>().text = "0";
+		playerTwoScoreView.GetComponent<Text>().text = "0";
 		winnerBannerText.GetComponent<Text>().text = "";
 		currentGameTime = 0f;
 		didStart = true;
@@ -48,6 +57,10 @@ public class GameController : MonoBehaviour
 	// Unity lifecycle method
 	void Update() 
 	{
+		// FIXME: move this to a view class
+		playerOneScoreView.GetComponent<Text>().text = PlayerScoreController.getScoreForPlayer(0).ToString();
+		playerTwoScoreView.GetComponent<Text>().text = PlayerScoreController.getScoreForPlayer(1).ToString();
+
 		// TODO: move this time logic to another class
 		currentGameTime += Time.deltaTime;
 		elapsedTurnTime -= Time.deltaTime;
@@ -87,7 +100,6 @@ public class GameController : MonoBehaviour
 			inturruptUndoLastMoveCoroutine();
 		}
 
-		// int currentPlayer = PlayerTurnController.activePlayer;
 		PlayerMoveModel playerMove = new PlayerMoveModel(postName);
 		
 		executePlayerMove(playerMove, postPosition, postName);
@@ -113,9 +125,10 @@ public class GameController : MonoBehaviour
 		FormationModel winningFormation = GameBoardController.findWinningFormation(playerMove);
 		if (winningFormation != null)
 		{
-			isComplete = true;
 			inturruptUndoLastMoveCoroutine();
+			isComplete = true;
 			// show winning formation
+			PlayerScoreController.declareWinner(playerMove.player);
 			buildWinnerText();
 
 			return;
@@ -156,13 +169,6 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-	// remove a player piece from the view
-	private void removePlayerPieceFromPost(PlayerMoveModel playerPiece)
-	{
-		GameObject pieceToRemove = GameObject.Find(playerPiece.translateBoardPositionToPieceName());
-		Destroy(pieceToRemove);
-	}
-
 	// coroutine that enables and then disables the ability to undo a move.
 	private IEnumerator enableUndoLastMove()
 	{
@@ -174,6 +180,9 @@ public class GameController : MonoBehaviour
 	}
 
 	// undo the lastMove
+	// entry into this method comes as a result of two things; 1) a player has clicked on the 
+	// undo button and, 2) the .Update() method of this class has picked up the truthy value of 
+	// undoLastMoveButtonControllerScript.shouldUndoLastMove.
 	private void revertLastMove()
 	{
 		undoLastMoveButtonControllerScript.disable();
@@ -187,6 +196,13 @@ public class GameController : MonoBehaviour
 			removePlayerPieceFromPost(lastMove);	
 			finalizePlayerChange();
 		}
+	}
+
+		// remove a player piece from the view
+	private void removePlayerPieceFromPost(PlayerMoveModel playerPiece)
+	{
+		GameObject pieceToRemove = GameObject.Find(playerPiece.translateBoardPositionToPieceName());
+		Destroy(pieceToRemove);
 	}
 
 	// used to stop the timer inside the undoLastMoveCoroutine

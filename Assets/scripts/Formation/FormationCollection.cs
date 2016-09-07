@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+//
 public class FormationCollection
 {
     public List<FormationModel> formations = new List<FormationModel>();
